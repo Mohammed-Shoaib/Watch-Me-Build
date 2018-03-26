@@ -1,0 +1,903 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+/* font-family: 'Open Sans', sans-serif; */
+@import url('https://fonts.googleapis.com/css?family=Dosis');
+/* font-family: 'Dosis', sans-serif; */
+@import url('https://fonts.googleapis.com/css?family=Supermercado+One');
+/* font-family: 'Supermercado One', cursive; */
+@import url('https://fonts.googleapis.com/css?family=Glegoo');
+/* font-family: 'Glegoo', serif; */
+@import url('https://fonts.googleapis.com/css?family=Righteous');
+/*Table header font:
+  font-family: 'Righteous', cursive;*/
+@import url('https://fonts.googleapis.com/css?family=Bree+Serif');
+/*font-family: 'Bree Serif', serif;*/
+
+@import url('https://fonts.googleapis.com/css?family=VT323');
+/*Game type feel font, 
+  font-family: 'VT323', monospace;*/
+
+body{
+	margin: 100px;
+	background-image: url("Resources/background4.jpg");
+	background-attachment: fixed;
+	color: white;
+}
+
+/*Navigation Bar*/
+
+.logo{
+	width: 125px;
+	height: 75px;
+	float: left;
+	padding: 05px 5px;
+}
+
+.nav-bar{
+	background-color: #000000;
+	overflow: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+header div nav ul{
+	margin: 0;
+	float: right;
+	text-decoration: none;
+}
+
+header div nav ul li{
+	display: inline-block;
+	margin: 0px 20px;
+	padding: 30px 0px;
+	position: relative;
+}
+
+header div nav ul li a{
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+}
+
+header div nav ul li a::before{
+	content: '';
+  	display: block;
+  	height: 5px;
+  	background-color: #ACE5EE;
+
+  	position: absolute;
+  	top: 0;
+  	width: 0%;
+  	transition: all ease-in-out 250ms;
+}
+
+header div nav ul li a:hover{
+	color: 	#ACE5EE;
+}
+
+nav a:hover::before {
+  width: 100%;
+}
+
+
+/*Homepage.php*/
+
+#TechnoShine{
+	text-shadow: 0px 0 70px #ff00de;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 50px;
+	color: #E7FEFF;
+}
+
+#TechnoShine:hover{
+	text-shadow: 0px 0 70px #00ffff;
+}
+
+h1{
+	text-align: center;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 50px;
+	color: #E7FEFF;
+}
+
+.GeneratedMarquee {
+	font-family:  'Supermercado One', cursive;
+	font-size:2em;
+	color:#FFFFFF;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+.search-home{
+	display: block;
+	margin: 0 auto;
+	margin-bottom: 30px;
+	overflow: auto;
+}
+
+.search-home button{
+	float: right;
+	display: block;
+	width: 100px;
+	height: 35px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 18px;
+	background-color: #1B1811;
+	border: none;
+	margin-right: 125px;
+}
+
+.search-home button:hover{
+	background-color: black;
+	cursor: pointer;
+}
+
+.search-home input{
+	float: right;
+	width: 200px;
+	height: 30px;
+	font-family: 'Glegoo', serif;
+	line-height: 30px;
+	margin-right: 20px;
+}
+
+.search-home input:focus{
+	background-color: #DDE26A;
+}
+
+#home-page{
+	margin: 0;
+	margin-top: 100px;
+	padding: 0;
+}
+
+.parallax h1{
+	margin: 0;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 75px;
+	color: #E7FEFF;
+
+}
+
+.parallax p{
+	margin: 0;
+	margin-top: 10px;
+	font-family:  'Supermercado One', cursive;
+	font-size: 30px;
+	color: #E7FEFF;
+	text-align: center;
+
+}
+
+#bg1{
+	margin: 0;
+	margin-top: 100px;
+	padding: 0;
+	background-image: url("Resources/background1.jpg");
+	background-size: cover;
+	background-attachment: fixed;
+	width: 100%;
+	height: 100vh;
+}
+
+#bg2{
+	margin: 0;
+	padding: 0;
+	background-image: url("Resources/background5.jpg");
+	background-size: cover;
+	background-attachment: fixed;
+	width: 100%;
+	height: 100vh;
+}
+
+#bg3{
+	margin: 0;
+	padding: 0;
+	background-image: url("Resources/background3.jpg");
+	background-size: cover;
+	background-attachment: fixed;
+	width: 100%;
+	height: 100vh;
+}
+
+#slider-p{
+	position: absolute;
+	font-family: 'Supermercado One', cursive;
+	font-size: 50px;
+	text-decoration: none;
+	color: #FF0038;
+	width: 20%;
+	padding-top: 300px;
+	text-align: right;
+}
+
+#slider-img{
+	width: 100%;
+	height: 100%;
+}
+
+#slider{
+	display: block;
+	margin: 0 auto;
+	margin-top: 10px;
+	width: 80%;
+	height: 100%;
+	/*background-image: url('Resources/ProductBackground.jpg');
+	background-size: cover;*/
+	background-color: 	#00B9FB;
+	border: solid 5px;
+	border-radius: 20px;
+}
+
+.animation-slider{
+	margin: 0 auto;
+	top: 50%;
+	padding: 0;
+	list-style: none;
+	text-decoration: none;
+	overflow: hidden;
+	height: 380px;
+	width: 600px;
+}
+
+.animation-slider figure div{
+	width: 20%;
+	float: left;
+}
+
+.animation-slider figure img{
+	width: 100%;
+	float: left;
+	display: inline-block;
+}
+
+.animation-slider figure{
+	position: relative;
+	width: 500%;
+	margin: 0;
+	left: 0;
+	top: -5%;
+	animation: 20s slider infinite;
+}
+
+@keyframes slider{
+	0%{
+		left: 0%
+	}
+
+	10%{
+		left: 0%;
+	}
+
+	12%{
+		left: -100%;
+	}
+
+	22%{
+		left: -100%;
+	}
+
+	24%{
+		left: -200%;
+	}
+
+	34%{
+		left: -200%;
+	}
+
+	36%{
+		left: -300%;
+	}
+
+	46%{
+		left: -300%;
+	}
+
+	48%{
+		left: -400%;
+	}
+
+	58%{
+		left: -400%;
+	}
+
+	60%{
+		left: -300%;
+	}
+
+	70%{
+		left: -300%;
+	}
+
+	72%{
+		left: -200%;
+	}
+
+	82%{
+		left: -200%;
+	}
+
+	84%{
+		left: -100%;
+	}
+
+	94%{
+		left: -100%;
+	}
+
+	96%{
+		left: 0%;
+	}
+
+	100%{
+		left: 0%;
+	}
+
+}
+
+/*LoginPage.php*/
+
+.login-page{
+	margin: 0 auto;
+	width: 480px;
+	text-align: left;
+	color: white;
+	font-family: 'Dosis', sans-serif;
+	font-size: 18px;
+	background-color:rgba(0, 0, 0, 0.6);
+}
+
+.login-page fieldset input{
+	margin: 10px 20px;
+	width: 400px;
+	height: 30px;
+	font-family: 'Glegoo', serif;
+	line-height: 30px;
+}
+
+.login-page input:focus{
+	background-color: #DDE26A;
+}
+
+.login-page button{
+	display: block;
+	margin: 0 auto;
+	width: 200px;
+	height: 40px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 18px;
+	background-color: #1B1811;
+	border: none;
+}
+
+.login-page button:hover{
+	background-color: black;
+	cursor: pointer;
+}
+
+/*SignUp.php */
+
+.signup-page {
+	margin: 0 auto;
+	width: 480px;
+	text-align: left;
+	color: white;
+	font-family: 'Dosis', sans-serif;
+	font-size: 18px;
+	background-color:rgba(0, 0, 0, 0.6);
+}
+
+.signup-page input,label{
+	margin: 10px 20px;
+}
+
+.signup-page fieldset input{
+	width: 400px;
+	height: 30px;
+	font-family: 'Glegoo', serif;
+	line-height: 30px;
+}
+
+.signup-page input:focus{
+	background-color: #DDE26A;
+}
+
+.signup-page button{
+	display: block;
+	margin: 0 auto;
+	width: 200px;
+	height: 40px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 18px;
+	background-color: #1B1811;
+	border: none;
+}
+
+.signup-page button:hover{
+	background-color: black;
+	cursor: pointer;
+}
+
+/*ProductList.php*/
+.productBox{
+	display: inline-block;
+	overflow: auto;
+	margin: 15px 30px;
+	width: 500px;
+	height: 170px;
+	border: solid 1px;
+	border-radius: 20px;
+	background-color: white;
+	color: black;
+	font-family: 'Supermercado One', cursive;
+	padding: 5px;
+}
+
+.productBox img{
+	float: left;
+}
+
+#Description{
+	margin: 0;
+}
+
+#Price{
+	display: block;
+	float: right;
+	margin-top: 100px;
+}
+
+.next-page{
+	float: right;
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+	margin-right: 30px;
+}
+
+.next-page:hover{
+	color: #ACE5EE;
+}
+
+.previous-page{
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+	margin-left: 30px;
+}
+
+.previous-page:hover{
+	color: #ACE5EE;
+}
+
+.sort-and-search{	
+	background-color: rgba(0,0,0,0.5);
+	margin: 0px 0px 30px 30px;
+	padding: 20px 0px;
+	width: 1090px;
+}
+
+.search-product{
+	display: block;
+	margin: 0 auto;
+}
+
+.search-product button{
+	float: right;
+	display: block;
+	width: 100px;
+	height: 35px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 18px;
+	background-color: #1B1811;
+	border: none;
+	margin-right: 15px;
+}
+
+.search-product button:hover{
+	background-color: black;
+	cursor: pointer;
+}
+
+.search-product input{
+	float: right;
+	width: 200px;
+	height: 30px;
+	font-family: 'Glegoo', serif;
+	line-height: 30px;
+	margin-right: 20px;
+}
+
+.search-product input:focus{
+	background-color: #DDE26A;
+}
+
+.sort-by label{
+	display: inline-block;
+	font-family: 'Dosis', sans-serif;
+	font-size: 20px;
+}
+
+.sort-by select{
+	background-color: black;
+	width: 150px;
+	height: 35px;
+	font-family: 'Dosis', sans-serif;
+	font-size: 18px;
+	color: #F2F3F4;
+}
+
+.sort-by button{
+	width: 80px;
+	height: 35px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 16px;
+	background-color: #1B1811;
+	border: none;
+	margin-left: 15px;
+}
+
+.sort-by button:hover{
+	background-color: black;
+	cursor: pointer;
+}
+
+
+/*CustomerList.php*/
+table,th,td{
+	border: 1px solid white;
+	border-collapse: collapse;
+	text-align: center;
+	margin: 0 auto;
+	margin-top: 10px;
+	padding: 8px;
+}
+
+td{
+	font-family: 'Glegoo', serif;
+	font-size: 14px;
+}
+
+.customerlist-table tr:nth-child(even) td:nth-child(even){
+	background-color: #E4717A;
+	opacity: 0.9;
+}
+
+.customerlist-table tr:nth-child(even) td:nth-child(odd){
+	background-color: 	#9966CC;
+	opacity: 0.9;
+}
+
+.customerlist-table tr:nth-child(odd) td:nth-child(even){
+	background-color: 	#9966CC;
+	opacity: 0.9;
+}
+
+.customerlist-table tr:nth-child(odd) td:nth-child(odd){
+	background-color: #E4717A;
+	opacity: 0.9;
+}
+
+#table-header{
+	background-color: #FF033E;
+	opacity: 1;
+	font-family: 'Bree Serif', serif;
+	font-size: 20px;
+}
+
+#nextpage-customer{
+	float: right;
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+	margin-right: 175px;
+}
+
+#nextpage-customer:hover{
+	color: #ACE5EE;
+}
+
+#previouspage-customer{
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+	margin-left: 175px;
+}
+
+#previouspage-customer:hover{
+	color: #ACE5EE;
+}
+
+/*OrderList.php*/
+
+#orderlist-table{
+	background-color:rgba(0, 0, 0, 0.6);
+}
+
+#nextpage-order{
+	float: right;
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+	margin-right: 75px;
+}
+
+#nextpage-order:hover{
+	color: #ACE5EE;
+}
+
+#previouspage-order{
+	text-decoration: none;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	color: white;
+	margin-left: 75px;
+}
+
+#previouspage-order:hover{
+	color: #ACE5EE;
+}
+
+/*View Product.php*/
+
+#brandPicture{
+	float: right;
+}
+
+.view-product{
+	overflow: auto;
+	margin: 15px auto;
+	width: 700px;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 20px;
+	background-color: white;
+	color: black;
+	font-family: 'Supermercado One', cursive;
+	padding: 5px;
+	text-align: center;
+}
+
+.view-product img{
+	float: left;
+}
+
+.view-product hr{
+	border-style: none;
+}
+
+#add-product{
+	margin: 0 auto;
+	margin-top: 30px;
+	display: block;
+	width: 100px;
+	height: 35px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 14px;
+	background-color: #1B1811;
+	border: none;
+	overflow: hidden;
+	transition: .5s;
+	position: absolute;
+	top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+
+}
+
+#add-product:hover{
+	/*background-color: black;*/
+	color: black;
+	cursor: pointer;
+}
+
+#add-product:after{
+    content: '';
+    width: 0px;
+    height: 120%;
+    position: absolute;
+    left: -10%;
+    bottom: 0;
+    background-color: #FFE4C4;
+    transform: skewX(15deg);
+    z-index: -1;
+    transition: .5s;
+}
+
+#add-product:hover:after{
+    left: -10%;
+    width: 120%;
+}
+
+
+/*ViewCart.php*/
+
+h2{
+	text-align: center;
+	font-family: 'Bree Serif', serif;
+	font-size: 30px;
+}
+
+h3{
+	display: block;
+	margin: 20px;
+	text-align: center;
+	font-family: 'Righteous', cursive;
+	font-size: 23px;
+}
+
+#remove-product{
+ 	margin: 0 auto;
+	margin-top: 25px;
+	display: block;
+	width: 150px;
+	height: 35px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 14px;
+	background-color: #1B1811;
+	border: none;
+	overflow: hidden;
+	transition: .5s;
+	position: absolute;
+	/*top:50%;*/
+    left: 50%;
+    transform: translate(-50%,-50%);
+
+}
+
+#remove-product:hover{
+	/*background-color: black;*/
+	color: black;
+	cursor: pointer;
+}
+
+#remove-product:after{
+    content: '';
+    width: 0px;
+    height: 120%;
+    position: absolute;
+    left: -10%;
+    bottom: 0;
+    background-color: #FFE4C4;
+    transform: skewX(15deg);
+    z-index: -1;
+    transition: .5s;
+}
+
+#remove-product:hover:after{
+    left: -10%;
+    width: 120%;
+}
+
+.order-form{
+	height: 25px;
+	width: 500px;
+	margin: 0 auto;
+}
+
+.empty-cart button{
+	margin: 0 auto;
+	margin-top: 10px;
+	display: block;
+	width: 200px;
+	height: 40px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 14px;
+	background-color: #1B1811;
+	border: none;
+	overflow: hidden;
+	transition: .5s;
+	position: absolute;
+	/*top:50%;*/    
+	left: 32%;
+    transform: translate(-50%,-50%);
+
+}
+
+.empty-cart button:hover{
+	color: black;
+	cursor: pointer;
+}
+
+.empty-cart button:after{
+    content: '';
+    width: 0px;
+    height: 120%;
+    position: absolute;
+    left: -10%;
+    bottom: 0;
+    background-color: #FFE4C4;
+    transform: skewX(15deg);
+    z-index: -1;
+    transition: .5s;
+}
+
+.empty-cart button:hover:after{
+    left: -10%;
+    width: 120%;
+}
+
+.confirm-order button{
+	display: block;
+	margin: 0 auto;
+	margin-top: 10px;
+	width: 200px;
+	height: 40px;
+	color: white;
+	font-family: 'Glegoo', serif;
+	font-size: 14px;
+	background-color: #1B1811;
+	border: none;
+	overflow: hidden;
+	transition: .5s;
+	position: absolute;
+    right: 17%;
+    transform: translate(-50%,-50%);
+}
+
+.confirm-order button:hover{
+	color: black;
+	cursor: pointer;
+}
+
+.confirm-order button:after{
+    content: '';
+    width: 0px;
+    height: 120%;
+    position: absolute;
+    left: -10%;
+    bottom: 0;
+    background-color: #FFE4C4;
+    transform: skewX(15deg);
+    z-index: -1;
+    transition: .5s;
+}
+
+.confirm-order button:hover:after{
+    left: -10%;
+    width: 120%;
+}
+
+/*ViewOrderDetails.php*/
+
+.viewOrderDetails-table{
+
+}
+
+#orderDetails-table-header{
+	opacity: 1;
+	font-family: 'Bree Serif', serif;
+	font-size: 20px;
+}
+
+.viewOrderDetails-table tr:nth-child(odd) td{
+	background-color: #E4717A;
+}
+
+.viewOrderDetails-table tr:nth-child(even) td{
+	background-color: 	#9966CC;
+}
+
+.viewOrderDetails-table tr:nth-child(odd) th{
+	background-color: #E4717A;
+}
+
+.viewOrderDetails-table tr:nth-child(even) th{
+	background-color: #9966CC;
+}
