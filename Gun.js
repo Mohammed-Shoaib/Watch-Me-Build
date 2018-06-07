@@ -7,6 +7,14 @@ function Gun()
 	this.x4a = width/4;			//For double Gun PowerUp
 	this.x4b = width - width/4;
 
+	this.moveLeft = function(){
+		gun.xdir = -5;
+	}
+
+	this.moveRight = function(){
+		gun.xdir = 5;
+	}
+
 	this.show = function(){
 		this.x += this.xdir;			
 		this.x = constrain(this.x,7.5,width-7.5);
