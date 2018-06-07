@@ -10,6 +10,7 @@ var displayAddScore5;
 var bulletTime,addBullets;
 var bulletsFirstLaunch0, bulletsFirstLaunch2, bulletsFirstLaunch1;
 var isFirstLaunch = true,isLastLevel = false,isDied = false,isPause = false;
+var pauseScreen,finishTime;
 
 //For starting the program
 function setup()
@@ -23,6 +24,8 @@ function setup()
 	bulletsFirstLaunch0 = 1;
 	bulletsFirstLaunch2 = 1;
 	bulletsFirstLaunch1 = 1;
+	pauseScreen = false;
+	finishTime = 0;
 	createCanvas(1300,600);
 	gun = new Gun();
 	var size = width - 300;
@@ -53,6 +56,8 @@ function resetSketch()
 	numFlowers = 0;
 	bulletTime = 0;
 	addBullets = 0;
+	pauseScreen = false;
+	finishTime = 0;
 	gun = new Gun();
 	var size = width - 300;
 	for(var rows=8 ; rows>=0 ; rows-=2)
@@ -80,6 +85,8 @@ function nextLevel()
 	level++;
 	bulletTime = 0;
 	addBullets = 0;
+	pauseScreen = false;
+	finishTime = 0;
 	bulletsFirstLaunch0 = 1;
 	bulletsFirstLaunch2 = 1;
 	bulletsFirstLaunch1 = 1;
@@ -102,9 +109,9 @@ function nextLevel()
 
 function draw()
 {
-	background(51);
 	if(isFirstLaunch)
 	{
+		background(51);
 		fill(255);
 		textSize(32);
 		text("Welcome to Space Invaders Clone!",width/2 - 200,30);
@@ -118,10 +125,19 @@ function draw()
 		text("2.The falling white-ish circle has a PowerUps! Shoot those to get awesome powers xD",10,450);
 		text("And that's it!",10,500);
 		textSize(32);
-		text("Press SpaceBar to get started! :)",width/2 - 180,550);  
+		text("Tap or Press SpaceBar to get started! :)",width/2 - 180,550);  
 	}
 	else if(isDied)
 	{
+		if(!pauseScreen)
+		{
+			finishTime = Date.now();
+			pauseScreen = true;
+		}
+		else if(pauseScreen && Date.now() - finishTime < 2000);
+		//Do nothing just pause the screen
+		else{
+		background(51);
 		fill(255);
 		textSize(32);
 		text("Game Over.",width/2-50,200);
@@ -130,10 +146,20 @@ function draw()
 		text("That was just AWESOME.",10,300)
 		text("Thank you so much for playing!",10,350);
 		textSize(32);
-		text("Press Esc to play again! :)",width/2 - 180,400);
+		text("Tap or Press Esc to play again! :)",width/2 - 180,400);
+		}
 	}
 	else if(isLastLevel)
 	{
+		if(!pauseScreen)
+		{
+			finishTime = Date.now();
+			pauseScreen = true;
+		}
+		else if(pauseScreen && Date.now() - finishTime < 2000);
+		//Do nothing just pause the screen
+		else{
+		background(51);
 		fill(255);
 		textSize(32);
 		text("Congratulations u have completed the game!",width/2 - 300,200);
@@ -143,9 +169,11 @@ function draw()
 		text("Thank you so much for playing!",10,350);
 		textSize(32);
 		text("Press SpaceBar to play again! :)",width/2 - 180,400);
+		}
 	}
 	else if(isPause)
 	{
+		background(51);
 		fill(255);
 		textSize(32);
 		text("Game Paused",width/2-60,height/2-50);
@@ -153,6 +181,7 @@ function draw()
 	}
 	else
 	{
+	background(51);
 	if(addBullets === 1)
 	{
 		if(bulletTime === 0)
@@ -623,6 +652,25 @@ function findPowerUp()
 	}
 }
 
+function mousePressed(){
+	if( isFirstLaunch && (mouseX>=0 && mouseX<=width) && (mouseY>=0 && mouseY<=height) )
+		isFirstLaunch = false;
+	else if(isDied)
+	{
+		isDied = false;
+		resetSketch();
+	}
+	if(mouseX>=0 && mouseX<gun.x)
+		gun.moveLeft();
+	if(mouseX<= width && mouseX>gun.x)
+		gun.moveRight();
+}
+
+function mouseReleased(){
+	if(gun.xdir != 0)
+		gun.xdir = 0;
+}
+
 //For moving the gun till the user does not release the arrow key
 function keyReleased()
 {
@@ -632,13 +680,14 @@ function keyReleased()
 		addBullets = 0;
 }
 
+
 //For moving the gun and creating bullets depending on the key
 function keyPressed()
 {
 	if(keyCode === LEFT_ARROW)
-		gun.xdir = -5;
+		gun.moveLeft();
 	else if(keyCode === RIGHT_ARROW)
-		gun.xdir = 5;
+		gun.moveRight();
 	if(key === " ")
 	{
 		if(isFirstLaunch)
