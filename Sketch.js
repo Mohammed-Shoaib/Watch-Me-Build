@@ -22,6 +22,12 @@ function setup()
 	ball = new Ball();
 }
 
+function resetSketch(){
+	score = 0;
+	tri = new Triangle();
+	ball = new Ball();
+}
+
 function draw()
 {
 	background(240);
@@ -31,6 +37,7 @@ function draw()
 		textSize(32);
 		text("You died!",width/2-50,height/2-50);
 		text("Score: " + score,width/2-50,height/2);
+		text("Tap or Press Spacebar to play again!",50,height/2+50);
 	}
 	else
 	{
@@ -55,6 +62,17 @@ function draw()
 
 function mousePressed()
 {
-	tri.rotate();
+	if(isDead){
+		isDead = false;
+		resetSketch();
+	}
+	else
+		tri.rotate();
 }
 
+function keyPressed(){
+	if(isDead && key == " "){
+		isDead = false;
+		resetSketch();
+	}
+}
