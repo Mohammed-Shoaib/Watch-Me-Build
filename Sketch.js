@@ -81,8 +81,8 @@ function draw()
 		text("Player 1: " + player1Score,10,220);
 		text("Player 2: " + player2Score,330,220);
 		text("Games Played: " + game,120,280);
-		text("Press SpaceBar to go",90,350);
-		text("to the next Game!",110,400);
+		text("Tap or Press SpaceBar",90,350);
+		text("to go to the next Game!",90,400);
 		pop();
 	}
 	else if(player2Win  && (Date.now() - startTime >= 2000) )
@@ -98,8 +98,8 @@ function draw()
 		text("Player 1: " + player1Score,10,220);
 		text("Player 2: " + player2Score,330,220);
 		text("Games Played: " + game,120,280);
-		text("Press SpaceBar to go",90,350);
-		text("to the next Game!",110,400);
+		text("Tap or Press SpaceBar",90,350);
+		text("to go to the next Game!",90,400);
 		pop();
 	}
 	else if(playerTie  && (Date.now() - startTime >= 2000) )
@@ -115,8 +115,8 @@ function draw()
 		text("Player 1: " + player1Score,10,220);
 		text("Player 2: " + player2Score,330,220);
 		text("Games Played: " + game,120,280);
-		text("Press SpaceBar to go",90,350);
-		text("to the next Game!",110,400);
+		text("Tap or Press SpaceBar",90,350);
+		text("to go to the next Game!",90,400);
 		pop();
 	}
 	else
@@ -145,7 +145,9 @@ function draw()
 
 function mousePressed()
 {
-	if(mouseX >= 100 && mouseX <= 400)
+	if(player1Win || player2Win || playerTie)
+			nextGame();
+	else if(mouseX >= 100 && mouseX <= 400)
 	{
 		if(mouseY >= 100 && mouseY <= 400)
 		{
