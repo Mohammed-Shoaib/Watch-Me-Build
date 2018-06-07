@@ -146,7 +146,7 @@ function draw()
 function mousePressed()
 {
 	if(player1Win || player2Win || playerTie)
-			nextGame();
+		nextGame();
 	else if(mouseX >= 100 && mouseX <= 400)
 	{
 		if(mouseY >= 100 && mouseY <= 400)
