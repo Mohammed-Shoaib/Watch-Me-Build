@@ -70,7 +70,7 @@ function setup(){
 }
 
 function draw(){
-	for(let i=0 ; i<50 ; i++){
+	for(let i=0 ; i<500 ; i++){
 		applyTransformation();
 		px = map(x,rangeX[0],rangeX[1],0,width);
 		py = map(y,rangeY[0],rangeY[1],height,0);
