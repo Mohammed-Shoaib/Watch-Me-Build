@@ -22,6 +22,7 @@ function Bird()
 
 	this.update = function(){
 		//Updating the parameters when the bird goes up
+		if(this.velocity < sizeH/50)
 		this.velocity += this.gravity;
 		this.y += this.velocity;
 		this.angle += 0.025;
