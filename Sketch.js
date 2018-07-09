@@ -1,4 +1,4 @@
-let cnv,x1,x2,x3,y1,y2,y3,len;
+let cnv,x1,x2,x3,y1,y2,y3,len,size;
 
 function centerCanvas()
 {
@@ -9,22 +9,26 @@ function centerCanvas()
 
 function windowResized()
 {
-	centerCanvas();
+	setup();
 }
 
 
 function setup(){
-	cnv = createCanvas(710,620);
+	if(windowWidth > windowHeight)
+		size = windowHeight;
+	else
+		size = windowWidth;
+	cnv = createCanvas(size,size);
 	centerCanvas();
-	background(51);
+	background(255);
 	noFill();
-	stroke(255);
+	stroke(0);
 	strokeWeight(1);
-	translate(5,5);
-	len = 700;
-	x1 = 350;
+	translate(0,size/200);
+	len = size/1.001;
+	x1 = len/2;
 	y1 = 0;
-	x2 = 700;
+	x2 = len;
 	y2 = Math.pow(len,2) - Math.pow(len/2,2);//606.22
 	y2 = Math.sqrt(y2);
 	console.log(y2);
