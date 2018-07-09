@@ -104,7 +104,7 @@ function draw()
 		pipe[i].show();
 
 		//Incrementing the score if the bird crosses a pipe
-		if(Math.ceil(bird.x) === Math.ceil(pipe[i].x) && !pipe[i].isFinished){
+		if( ( Math.ceil(bird.x) === Math.ceil(pipe[i].x) ) ||  ( Math.ceil(bird.x) === Math.ceil(pipe[i].x) + 1 ) && !pipe[i].isFinished ){
 			count++;
 			pipe[i].isFinished = true;
 		}
