@@ -1,6 +1,6 @@
 let cnv,sizeW,sizeH;
 let bird,pipe,pipeDistance,bg,count;
-let isDied,isFirstLaunch,pauseScreen,startTime;
+let isDied,isFirstLaunch,pauseScreen,startTime,tapDelay;
 
 function centerCanvas()
 {
@@ -39,6 +39,7 @@ function setup()
 	pipe = [];
 	startTime = 0;
 	count = 0;
+	tapDelay = 0;
 	isDied = false;
 	isFirstLaunch = true;
 	pauseScreen = false;
@@ -53,6 +54,7 @@ function resetSketch(){
 	pipe = [];
 	startTime = 0;
 	count = 0;
+	tapDelay = 0;
 	isDied = false;
 	isFirstLaunch = false;
 	pauseScreen = false;
@@ -104,7 +106,7 @@ function draw()
 		pipe[i].show();
 
 		//Incrementing the score if the bird crosses a pipe
-		if( ( Math.ceil(bird.x) === Math.ceil(pipe[i].x) ) ||  ( Math.ceil(bird.x) === Math.ceil(pipe[i].x) + 1 ) && !pipe[i].isFinished ){
+		if(!pipe[i].isFinished && bird.x > pipe[i].x){
 			count++;
 			pipe[i].isFinished = true;
 		}
@@ -134,8 +136,10 @@ function mousePressed(){
 			isFirstLaunch = false;
 		else if(!pauseScreen && isDied)
 			resetSketch();
-		else
+		else if(Date.now() - tapDelay > 100){
 			bird.up();
+			tapDelay = Date.now();
+		}
 	}
 }
 
@@ -144,8 +148,10 @@ function keyPressed()
 	if(key == " "){
 		if(isFirstLaunch)
 			isFirstLaunch = false;
-		else
+		else if(Date.now() - tapDelay > 100){
 			bird.up();
+			tapDelay = Date.now();
+		}
 	}
 }
 
