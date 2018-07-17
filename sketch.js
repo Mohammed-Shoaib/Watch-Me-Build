@@ -209,6 +209,7 @@ function train(xs,ys){
 	isTrain = false;
 	let config = {
 		shuffle: true,
+		epochs: 10
 	};
 	model.fit(xs,ys,config).then((response) => {
 			loss.html(response.history.loss[0].toFixed(6));
