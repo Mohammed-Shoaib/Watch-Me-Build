@@ -145,6 +145,11 @@ function mousePressed(){
 	return false;
 }
 
+function touchStarted(){
+	//Fixing the double tap bug issue on mobile
+	return false;
+}
+
 function keyPressed()
 {
 	if(key == " "){
