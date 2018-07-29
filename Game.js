@@ -130,11 +130,8 @@ function draw()
 }
 
 function mousePressed(){
-	// Fixing the double tap bug on mobile
-	if (event.type != 'touchstart')
-		return;
 	//Checking if the mouse is pressed within the canvas
-	else if( (mouseX >= 0 && mouseX <= sizeW) && (mouseY >= 0 && mouseY <= sizeH) ){
+	if( (mouseX >= 0 && mouseX <= sizeW) && (mouseY >= 0 && mouseY <= sizeH) ){
 		if(isFirstLaunch)
 			isFirstLaunch = false;
 		else if(!pauseScreen && isDied)
@@ -144,6 +141,7 @@ function mousePressed(){
 			tapDelay = Date.now();
 		}
 	}
+	return false;
 }
 
 function keyPressed()
