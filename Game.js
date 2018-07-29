@@ -141,6 +141,7 @@ function mousePressed(){
 			tapDelay = Date.now();
 		}
 	}
+	//Fixing the double tap bug issue on mobile
 	return false;
 }
 
