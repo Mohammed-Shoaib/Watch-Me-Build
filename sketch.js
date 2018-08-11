@@ -1,9 +1,15 @@
 let cnv,size;
 let data,model,factor;
-let invalidInput,trainIterationsInput;
-let iterationP,iterationVal,lossP,accuracyP,lossVal,accuracyVal,predictP,predictVal;
-let trainBatchSize,trainIterations;
-let validationBatchSize,validationIterationFrequency;
+let invalidInput,trainIterationsInput,modelP;
+let trainIterationP,trainIterationVal;
+let trainLossP,trainLossVal;
+let trainAccuracyP,trainAccuracyVal;
+let testLossP,testtrainLossVal;
+let testAccuracyP,testtrainAccuracyVal;
+let predictP,predictVal;
+let trainBatchSize,testBatchSize,validationBatchSize;
+let trainIterations,validationIterationFrequency;
+let totalPoints,limitPoints;
 
 function setup(){
 	// To use the Pixel array
@@ -11,20 +17,29 @@ function setup(){
 
 	// Creating the html elements
 	createElement('br');
-	createP('Train Iterations: ');
-	trainIterationsInput = createInput('100').addClass('form-control');
+	modelP = createP('');
 	invalidInput = createP('');
 	createElement('br');
-	startB = createButton('Train Model').addClass('btn-success');
-	// createP('or');
-	// load = createButton('Load Model').addClass('btn-success');
+	createP('Train Iterations: ');
+	trainIterationsInput = createInput('100').addClass('form-control');
 	createElement('br');
+	loadB = createButton('Load Model').addClass('btn-success');
+	trainB = createButton('Train Model').addClass('btn-success');
+	testB = createButton('Test Model').addClass('btn-success');
+	createElement('br');
+	createP('Training Results: ');
 	createP('Iteration: ');
-	iterationP = createP('');
+	trainIterationP = createP('');
 	createP('Loss: ');
-	lossP = createP('');
+	trainLossP = createP('');
 	createP('Accuracy: ');
-	accuracyP = createP('');
+	trainAccuracyP = createP('');
+	createElement('br');
+	createP('Testing Results: ');
+	createP('Loss: ');
+	testLossP = createP('');
+	createP('Accuracy: ');
+	testAccuracyP = createP('');
 	createElement('br');
 
 	// Creating the canvas
@@ -50,10 +65,18 @@ function setup(){
 	createP('Prediction: ')
 	predictP = createP('');
 
-	startB.mousePressed(() => {
+	loadB.mousePressed(async() => {
+		modelP.html('Model Loading...');
+		model = await tf.loadModel('./Model/model.json');
+		compileModel();
+		modelP.html('Model Loaded.');
+	});
+
+	trainB.mousePressed(() => {
 		if(isNaN(trainIterationsInput.value()))			//Returns true if it's not a valid number
 			invalidInput.html('Please enter valid input!');
 		else{
+			invalidInput.html('');
 			trainIterations = Number(trainIterationsInput.value());
 			// Loading the MNIST dataset & training the model
 			data = new MnistData();
@@ -61,10 +84,17 @@ function setup(){
 		}
 	});
 
+	testB.mousePressed(() => {
+		modelP.html('Testing the Model...');
+		data = new MnistData();
+		data.load().then(test);
+	})
+
 	predictB.mousePressed(() => {
 		let xs = canvasToMnistData();
 		predict(xs);
 	});
+
 	clearB.mousePressed(() => {
 		clear();
 		background(0);
@@ -73,25 +103,39 @@ function setup(){
 	});
 
 	createModel();
+
+	// Defining the parameters
+	trainBatchSize = testBatchSize = 64;
+	trainIterations = 1000;
+	validationBatchSize = 1000;
+	validationIterationFrequency = 5;
 }
 
 function draw(){
-	if(!iterationVal)
-		iterationP.html('No iteration');
+	if(isNaN(trainIterationVal))
+		trainIterationP.html('No iteration');
 	else
-		iterationP.html(iterationVal);
-	if(!lossVal)
-		lossP.html('No Loss');
+		trainIterationP.html(trainIterationVal);
+	if(isNaN(trainLossVal))
+		trainLossP.html('No Loss');
 	else
-		lossP.html(lossVal);
-	if(!accuracyVal)
-		accuracyP.html('No Accuracy');
+		trainLossP.html(trainLossVal);
+	if(isNaN(trainAccuracyVal))
+		trainAccuracyP.html('No Accuracy');
 	else
-		accuracyP.html(str(accuracyVal) + '%');
-	if(!predictVal)
+		trainAccuracyP.html(str(trainAccuracyVal) + '%');
+	if(isNaN(predictVal))
 		predictP.html('No Prediction');
 	else
 		predictP.html(predictVal);
+	if(isNaN(testtrainLossVal))
+		testLossP.html('No Loss');
+	else
+		testLossP.html(testtrainLossVal);
+	if(isNaN(testtrainAccuracyVal))
+		testAccuracyP.html('No Accuracy');
+	else
+		testAccuracyP.html(str(testtrainAccuracyVal) + '%');
 
 	// Drawing the number
 	if(mouseIsPressed)
@@ -144,26 +188,26 @@ function createModel(){
 		kernelInitializer: 'VarianceScaling'
 	}));
 
-	// Compiling the model
+	compileModel();
+}
+
+// Compiling the model before it gets used
+function compileModel(){
 	model.compile({
 		optimizer: tf.train.sgd(0.1),
 		loss: 'categoricalCrossentropy',
 		metrics: ['accuracy']
 	});
-
-	// Defining the parameters
-	trainBatchSize = 64;
-	trainIterations = 1000;
-	validationBatchSize = 1000;
-	validationIterationFrequency = 5;
 }
 
 // Training the model
 async function train(){
+	modelP.html('Training the Model...');
+
 	for(let i=0 ; i<trainIterations ; i++){
 		let validation_xs,validation_ys,validationBatch,validationData;
 		let train_xs,train_ys,trainBatch;
-		iterationVal = i+1;
+		trainIterationVal = i+1;
 
 		// Creating the training batch
 		trainBatch = data.nextTrainBatch(trainBatchSize);
@@ -185,8 +229,8 @@ async function train(){
 			callbacks: { onEpochEnd: tf.nextFrame }
 		};
 		await model.fit(train_xs,train_ys,config).then((response) => {
-			lossVal = response.history.loss[0].toFixed(6);
-			accuracyVal = (response.history.acc[0]*100).toFixed(2);
+			trainLossVal = response.history.loss[0].toFixed(6);
+			trainAccuracyVal = (response.history.acc[0]*100).toFixed(2);
 		});
 
 		// Memory management
@@ -201,13 +245,39 @@ async function train(){
 		train_xs.dispose();
 		train_ys.dispose();
 	}
+	modelP.html('Training Completed.');
 }
 
-// Function to predict the number given an array of 784 values
-function predict(xs){
-	let test_xs = tf.tensor(xs,[1,28,28,1]);
-	let test_ys = model.predict(test_xs).argMax(1);
+// Function to test the accuracy of the model
+async function test(){
+	// Creating the test data
+	let testBatch = data.nextTestBatch(10000);
+	let test_xs = testBatch.xs.reshape([10000,28,28,1]);
+	let test_ys = testBatch.labels;
+
+	// Evaluates and returns an array with 2 values, the loss and the accuracy.
+	let results = tf.tidy(() => model.evaluate(test_xs,test_ys));
+	testtrainLossVal = results[0].dataSync()[0].toFixed(6);
+	testtrainAccuracyVal = (results[1].dataSync()*100).toFixed(2);
+
+	// Memory management
+	testBatch.xs.dispose();
+	testBatch.labels.dispose();
+	test_xs.dispose();
+	test_ys.dispose();
+	results[0].dispose();
+	results[1].dispose();
+
+	modelP.html('Testing Completed.');
+}
+
+// Function to predict the number given the pixel array of an image with 784 values
+function predict(predict_x){
+	let test_xs = tf.tensor(predict_x,[1,28,28,1]);
+	let test_ys = tf.tidy(() => model.predict(test_xs).argMax(1));
 	predictVal = test_ys.dataSync()[0];
+	test_xs.dispose();
+	test_ys.dispose();
 }
 
 // Function to covert the canvas data to the size of mnist data
