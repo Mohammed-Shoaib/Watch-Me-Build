@@ -2,21 +2,33 @@ let cnv,size;
 let data,model,factor;
 let invalidInput,trainIterationsInput,modelP;
 let trainIterationP,trainIterationVal;
-let trainLossP,trainLossVal;
-let trainAccuracyP,trainAccuracyVal;
-let testLossP,testtrainLossVal;
-let testAccuracyP,testtrainAccuracyVal;
-let predictP,predictVal;
+let trainLossP,trainAccuracyP;
+let testLossP,testAccuracyP;
+let predictP;
 let trainBatchSize,testBatchSize,validationBatchSize;
 let trainIterations,validationIterationFrequency;
-let totalPoints,limitPoints;
+let totalPoints,maxPoints;
+
+function windowResized(){
+	let update = {width: windowWidth, height: windowHeight/1.5};
+	Plotly.relayout('chart', update);
+}
+
+function addPoint(lossY,accuracyY){
+	Plotly.extendTraces('chart',{ y:[[lossY],[accuracyY]]}, [0,1]);
+	totalPoints++;
+}
 
 function setup(){
 	// To use the Pixel array
 	pixelDensity(1);
 
+	// Creating the plotly elements
+	totalPoints = 0;
+	maxPoints = 100;
+	createPlot();
+
 	// Creating the html elements
-	createElement('br');
 	modelP = createP('');
 	invalidInput = createP('');
 	createElement('br');
@@ -27,20 +39,23 @@ function setup(){
 	trainB = createButton('Train Model').addClass('btn-success');
 	testB = createButton('Test Model').addClass('btn-success');
 	createElement('br');
-	createP('Training Results: ');
-	createP('Iteration: ');
-	trainIterationP = createP('');
-	createP('Loss: ');
-	trainLossP = createP('');
-	createP('Accuracy: ');
-	trainAccuracyP = createP('');
-	createElement('br');
-	createP('Testing Results: ');
-	createP('Loss: ');
-	testLossP = createP('');
-	createP('Accuracy: ');
-	testAccuracyP = createP('');
-	createElement('br');
+
+	let results = createDiv();
+	results.id('results');
+	// Creating the Train Results elements
+	let trainDiv = createDiv().parent(results);
+	trainDiv.id('train');
+	createP('Training Results').parent(trainDiv);
+	trainLossP = createP('Loss: ').hide().parent(trainDiv);
+	trainAccuracyP = createP('Accuracy: ').hide().parent(trainDiv);
+	trainIterationP = createP('Iteration: ').hide().parent(trainDiv);
+
+	// Creating the Test Results elements
+	let testDiv = createDiv().parent(results);
+	testDiv.id('test');
+	createP('Testing Results ').parent(testDiv);
+	testLossP = createP('Loss: ').hide().parent(testDiv);
+	testAccuracyP = createP('Accuracy: ').hide().parent(testDiv);
 
 	// Creating the canvas
 	if(windowWidth > windowHeight)
@@ -62,8 +77,7 @@ function setup(){
 	predictB = createButton('Predict').addClass('btn-primary');
 	clearB = createButton('Clear').addClass('btn-primary');
 	createElement('br');
-	createP('Prediction: ')
-	predictP = createP('');
+	predictP = createP('Prediction: ')
 
 	loadB.mousePressed(async() => {
 		modelP.html('Model Loading...');
@@ -112,34 +126,64 @@ function setup(){
 }
 
 function draw(){
-	if(isNaN(trainIterationVal))
-		trainIterationP.html('No iteration');
-	else
-		trainIterationP.html(trainIterationVal);
-	if(isNaN(trainLossVal))
-		trainLossP.html('No Loss');
-	else
-		trainLossP.html(trainLossVal);
-	if(isNaN(trainAccuracyVal))
-		trainAccuracyP.html('No Accuracy');
-	else
-		trainAccuracyP.html(str(trainAccuracyVal) + '%');
-	if(isNaN(predictVal))
-		predictP.html('No Prediction');
-	else
-		predictP.html(predictVal);
-	if(isNaN(testtrainLossVal))
-		testLossP.html('No Loss');
-	else
-		testLossP.html(testtrainLossVal);
-	if(isNaN(testtrainAccuracyVal))
-		testAccuracyP.html('No Accuracy');
-	else
-		testAccuracyP.html(str(testtrainAccuracyVal) + '%');
+	// Checking for relayout
+	// if(totalPoints > maxPoints){
+	// 	let x = totalPoints - maxPoints;
+	// 	let y = totalPoints;
+	// 	let x1 = map(x,x,y,0,0.45);
+	// 	let x2 = map(x,x,y,0.55,1);
+	// 	Plotly.relayout('chart',{
+	// 		xaxis1: {range: [totalPoints-maxPoints,totalPoints]},
+	// 		xaxis2: {range: [totalPoints-maxPoints,totalPoints]}
+	// 	});
+	// }
+	// addPoint(Math.random(),Math.random());
 
 	// Drawing the number
 	if(mouseIsPressed)
 		line(pmouseX,pmouseY,mouseX,mouseY);
+}
+
+// Creating the plot
+function createPlot(){
+	let lossTrace = {
+		y: [],
+		xaxis: 'x1',
+		yaxis: 'y1',
+		type: 'line',
+		name: 'Loss',
+		connectgaps: true
+	};
+	let accuracyTrace = {
+		y: [],
+		xaxis: 'x2',
+		yaxis: 'y2',
+		type: 'line',
+		name: 'Accuracy',
+		connectgaps: true
+	};
+	let plotData = [lossTrace, accuracyTrace];
+	let layout = {
+		title: 'Train Results',
+		autosize: true,
+		width: windowWidth,
+		height: windowHeight/1.5,
+		showlegend: true,
+		yaxis1: {title: 'Loss'},
+		xaxis1: {
+			title: 'Epoch',
+			domain: [0, 0.45]
+		},
+		xaxis2: {
+			title: 'Epoch',
+			domain: [0.55, 1]
+		},
+		yaxis2: {
+			title: 'Accuracy',
+			anchor: 'x2'
+		}
+	};
+	Plotly.newPlot('chart',plotData,layout);
 }
 
 // Creating the model
@@ -203,6 +247,9 @@ function compileModel(){
 // Training the model
 async function train(){
 	modelP.html('Training the Model...');
+	trainLossP.show();
+	trainAccuracyP.show();
+	trainIterationP.show();
 
 	for(let i=0 ; i<trainIterations ; i++){
 		let validation_xs,validation_ys,validationBatch,validationData;
@@ -226,11 +273,16 @@ async function train(){
 			batchSize: trainBatchSize,
 			validationData,
 			epochs: 1,
-			callbacks: { onEpochEnd: tf.nextFrame }
+			callbacks: {onBatchEnd: tf.nextFrame}
 		};
 		await model.fit(train_xs,train_ys,config).then((response) => {
-			trainLossVal = response.history.loss[0].toFixed(6);
-			trainAccuracyVal = (response.history.acc[0]*100).toFixed(2);
+			let loss = response.history.loss[0].toFixed(6);
+			trainLossP.html(`Loss: ${loss}`);
+			let accuracy = (response.history.acc[0]*100).toFixed(2);
+			trainAccuracyP.html(`Accuracy: ${accuracy}%`);
+			let iterations = i+1;
+			trainIterationP.html(`Iterations: ${iterations}`);
+			addPoint(loss,accuracy);
 		});
 
 		// Memory management
@@ -250,15 +302,24 @@ async function train(){
 
 // Function to test the accuracy of the model
 async function test(){
+	testLossP.show();
+	testAccuracyP.show();
 	// Creating the test data
 	let testBatch = data.nextTestBatch(10000);
 	let test_xs = testBatch.xs.reshape([10000,28,28,1]);
 	let test_ys = testBatch.labels;
 
 	// Evaluates and returns an array with 2 values, the loss and the accuracy.
+	let config = {
+		callbacks: {
+			onBatchEnd: tf.nextFrame
+		}
+	}
 	let results = tf.tidy(() => model.evaluate(test_xs,test_ys));
-	testtrainLossVal = results[0].dataSync()[0].toFixed(6);
-	testtrainAccuracyVal = (results[1].dataSync()*100).toFixed(2);
+	let loss = results[0].dataSync()[0].toFixed(6);
+	let accuracy = (results[1].dataSync()*100).toFixed(2);
+	testLossP.html(`Loss: ${loss}`);
+	testAccuracyP.html(`Accuracy: ${accuracy}%`);
 
 	// Memory management
 	testBatch.xs.dispose();
@@ -275,7 +336,8 @@ async function test(){
 function predict(predict_x){
 	let test_xs = tf.tensor(predict_x,[1,28,28,1]);
 	let test_ys = tf.tidy(() => model.predict(test_xs).argMax(1));
-	predictVal = test_ys.dataSync()[0];
+	let prediction = test_ys.dataSync()[0];
+	predictP.html(`Prediction: ${prediction}`);
 	test_xs.dispose();
 	test_ys.dispose();
 }
