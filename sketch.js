@@ -1,6 +1,7 @@
 let cnv,size;
-let data,model,factor;
-let invalidInput,trainIterationsInput,modelP;
+let data,isDataLoaded,model,factor;
+let modelP,errorP,trainIterationsInput;
+let trainP,testP;
 let trainIterationP,trainIterationVal;
 let trainLossP,trainAccuracyP;
 let testLossP,testAccuracyP;
@@ -12,6 +13,12 @@ let totalPoints,maxPoints;
 function windowResized(){
 	let update = {width: windowWidth, height: windowHeight/1.5};
 	Plotly.relayout('chart', update);
+}
+
+function preload(){
+	// Loading the MNIST dataset
+	data = new MnistData();
+	data.load().then(() => isDataLoaded = true);
 }
 
 function addPoint(lossY,accuracyY){
@@ -30,7 +37,7 @@ function setup(){
 
 	// Creating the html elements
 	modelP = createP('');
-	invalidInput = createP('');
+	errorP = createP('');
 	createElement('br');
 	createP('Train Iterations: ');
 	trainIterationsInput = createInput('100').addClass('form-control');
@@ -45,7 +52,7 @@ function setup(){
 	// Creating the Train Results elements
 	let trainDiv = createDiv().parent(results);
 	trainDiv.id('train');
-	createP('Training Results').parent(trainDiv);
+	trainP = createP('Train Results: No Results').parent(trainDiv);
 	trainLossP = createP('Loss: ').hide().parent(trainDiv);
 	trainAccuracyP = createP('Accuracy: ').hide().parent(trainDiv);
 	trainIterationP = createP('Iteration: ').hide().parent(trainDiv);
@@ -53,7 +60,7 @@ function setup(){
 	// Creating the Test Results elements
 	let testDiv = createDiv().parent(results);
 	testDiv.id('test');
-	createP('Testing Results ').parent(testDiv);
+	testP = createP('Test Results: No Results ').parent(testDiv);
 	testLossP = createP('Loss: ').hide().parent(testDiv);
 	testAccuracyP = createP('Accuracy: ').hide().parent(testDiv);
 
@@ -77,7 +84,7 @@ function setup(){
 	predictB = createButton('Predict').addClass('btn-primary');
 	clearB = createButton('Clear').addClass('btn-primary');
 	createElement('br');
-	predictP = createP('Prediction: ')
+	predictP = createP('Prediction: ').hide();
 
 	loadB.mousePressed(async() => {
 		modelP.html('Model Loading...');
@@ -88,20 +95,23 @@ function setup(){
 
 	trainB.mousePressed(() => {
 		if(isNaN(trainIterationsInput.value()))			//Returns true if it's not a valid number
-			invalidInput.html('Please enter valid input!');
+			errorP.html('Please enter valid input!');
 		else{
-			invalidInput.html('');
+			errorP.html('');
 			trainIterations = Number(trainIterationsInput.value());
-			// Loading the MNIST dataset & training the model
-			data = new MnistData();
-			data.load().then(train);
+			if(isDataLoaded)
+				train();
+			else
+				errorP.html('Data is still being loaded! Please wait...');
 		}
 	});
 
 	testB.mousePressed(() => {
-		modelP.html('Testing the Model...');
-		data = new MnistData();
-		data.load().then(test);
+		errorP.html('');
+		if(isDataLoaded)
+			test();
+		else
+			errorP.html('Data is still being loaded! Please wait...');
 	})
 
 	predictB.mousePressed(() => {
@@ -247,9 +257,11 @@ function compileModel(){
 // Training the model
 async function train(){
 	modelP.html('Training the Model...');
-	trainLossP.show();
-	trainAccuracyP.show();
-	trainIterationP.show();
+	trainP.html('Train Results');
+	trainP.style('display','inline');
+	trainLossP.style('display','inline');
+	trainAccuracyP.style('display','inline');
+	trainIterationP.style('display','inline');
 
 	for(let i=0 ; i<trainIterations ; i++){
 		let validation_xs,validation_ys,validationBatch,validationData;
@@ -302,8 +314,13 @@ async function train(){
 
 // Function to test the accuracy of the model
 async function test(){
-	testLossP.show();
-	testAccuracyP.show();
+	modelP.html('Testing the Model...');
+	for(let i=0 ; i<60 ; i++)
+		await tf.nextFrame();
+	testP.html('Test Results');
+	testP.style('display','inline');
+	testLossP.style('display','inline');
+	testAccuracyP.style('display','inline');
 	// Creating the test data
 	let testBatch = data.nextTestBatch(10000);
 	let test_xs = testBatch.xs.reshape([10000,28,28,1]);
@@ -334,6 +351,7 @@ async function test(){
 
 // Function to predict the number given the pixel array of an image with 784 values
 function predict(predict_x){
+	predict.style('display','inline');
 	let test_xs = tf.tensor(predict_x,[1,28,28,1]);
 	let test_ys = tf.tidy(() => model.predict(test_xs).argMax(1));
 	let prediction = test_ys.dataSync()[0];
