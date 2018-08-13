@@ -1,10 +1,7 @@
 # Digit Recognizer
 A digit recognizer using the MNIST Dataset built using TensorFlow.js
 
-### Demo
-<center>
-![Demo](https://media.giphy.com/media/ksKJmUfSUcK0ye5lDg/giphy.gif)
-</center>
+[Demo](https://media.giphy.com/media/ksKJmUfSUcK0ye5lDg/giphy.gif)
 
 ### Architecture
 
