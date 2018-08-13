@@ -1,70 +1,62 @@
-let cnv,size;
-let data,isDataLoaded,model,factor;
-let modelP,errorP,trainIterationsInput;
-let trainP,testP;
-let trainIterationP,trainIterationVal;
-let trainLossP,trainAccuracyP;
-let testLossP,testAccuracyP;
+let cnv,size,factor;
+let data,isDataLoaded,model;
+let messageP;
+let trainP,trainLossP,trainAccuracyP,trainIterationP;
+let testP,testLossP,testAccuracyP;
 let predictP;
 let trainBatchSize,testBatchSize,validationBatchSize;
 let trainIterations,validationIterationFrequency;
 let totalPoints,maxPoints;
 
 function windowResized(){
-	let update = {width: windowWidth, height: windowHeight/1.5};
-	Plotly.relayout('chart', update);
-}
+	let contentInnerWidth,update;
+	let contentInnerHeight = 500;
 
-function preload(){
-	// Loading the MNIST dataset
-	data = new MnistData();
-	data.load().then(() => isDataLoaded = true);
+	// Resizing all the plots
+	contentInnerWidth = $('#lossChart').innerWidth()*0.9;
+	update = {width: contentInnerWidth, height: contentInnerHeight};
+	Plotly.relayout('lossChart', update);
+
+	contentInnerWidth = $('#accuracyChart').innerWidth()*0.9;
+	update = {width: contentInnerWidth, height: contentInnerHeight};
+	Plotly.relayout('accuracyChart', update);
+
+	contentInnerWidth = $('#predictChart').innerWidth()*0.9;
+	update = {width: contentInnerWidth, height: contentInnerHeight};
+	Plotly.relayout('predictChart', update);
 }
 
 function addPoint(lossY,accuracyY){
-	Plotly.extendTraces('chart',{ y:[[lossY],[accuracyY]]}, [0,1]);
+	Plotly.extendTraces('lossChart',{y:[[lossY]]}, [0]);
+	Plotly.extendTraces('accuracyChart',{y:[[accuracyY]]}, [0]);
 	totalPoints++;
 }
 
-function setup(){
+function plotPrediction(scores){
+	Plotly.restyle('predictChart','y',[scores]);
+}
+
+async function setup(){
 	// To use the Pixel array
 	pixelDensity(1);
 
-	// Creating the plotly elements
+	// Initializing the variables
 	totalPoints = 0;
-	maxPoints = 100;
-	createPlot();
+	maxPoints = 500;
+	messageP = $(document.getElementById('message'));
+	loadB = $(document.getElementById('loadB'));
+	trainB = $(document.getElementById('trainB'));
+	testB = $(document.getElementById('testB'));
+	predictB = $(document.getElementById('predictB'));
+	clearB = $(document.getElementById('clearB'));
 
-	// Creating the html elements
-	modelP = createP('');
-	errorP = createP('');
-	createElement('br');
-	createP('Train Iterations: ');
-	trainIterationsInput = createInput('100').addClass('form-control');
-	createElement('br');
-	loadB = createButton('Load Model').addClass('btn-success');
-	trainB = createButton('Train Model').addClass('btn-success');
-	testB = createButton('Test Model').addClass('btn-success');
-	createElement('br');
+	// Defining the parameters
+	trainBatchSize = testBatchSize = 64;
+	trainIterations = 100;
+	validationBatchSize = 1000;
+	validationIterationFrequency = 5;
 
-	let results = createDiv();
-	results.id('results');
-	// Creating the Train Results elements
-	let trainDiv = createDiv().parent(results);
-	trainDiv.id('train');
-	trainP = createP('Train Results: No Results').parent(trainDiv);
-	trainLossP = createP('Loss: ').hide().parent(trainDiv);
-	trainAccuracyP = createP('Accuracy: ').hide().parent(trainDiv);
-	trainIterationP = createP('Iteration: ').hide().parent(trainDiv);
-
-	// Creating the Test Results elements
-	let testDiv = createDiv().parent(results);
-	testDiv.id('test');
-	testP = createP('Test Results: No Results ').parent(testDiv);
-	testLossP = createP('Loss: ').hide().parent(testDiv);
-	testAccuracyP = createP('Accuracy: ').hide().parent(testDiv);
-
-	// Creating the canvas
+	// Initializing the size of the canvas
 	if(windowWidth > windowHeight)
 		size = windowHeight;
 	else
@@ -73,127 +65,164 @@ function setup(){
 	// A factor to convert the 28×28 MNIST image to canvas size
 	factor = floor(size/28);
 	size = factor*28;
+
+	// Creating the Train Results elements
+	trainP = createP('Train Results: No Results').parent('train');
+	trainLossP = createP('Loss: ').hide().parent('train');
+	trainAccuracyP = createP('Accuracy: ').hide().parent('train');
+	trainIterationP = createP('Iteration: ').hide().parent('train');
+
+	// Creating the Test Results elements
+	testP = createP('Test Results: No Results ').parent('test');
+	testLossP = createP('Loss: ').hide().parent('test');
+	testAccuracyP = createP('Accuracy: ').hide().parent('test');
+
+	// Creating the predict element
+	predictP = createP().hide().parent('predict');
+
+	// Creating the canvas
 	cnv = createCanvas(size,size);
-	cnv.style('display','block');
+	cnv.parent('canvas');
 	background(0);
 	stroke(255);
 	strokeWeight(factor*2);
 
-	// Creating the html elements
-	createElement('br');
-	predictB = createButton('Predict').addClass('btn-primary');
-	clearB = createButton('Clear').addClass('btn-primary');
-	createElement('br');
-	predictP = createP('Prediction: ').hide();
-
-	loadB.mousePressed(async() => {
-		modelP.html('Model Loading...');
+	// Defining the onClick functions for the buttons
+	loadB.click(async() => {
+		$(messageP).html('Loading the Model...');
 		model = await tf.loadModel('./Model/model.json');
 		compileModel();
-		modelP.html('Model Loaded.');
+		$(messageP).html('Model Loaded.');
 	});
-
-	trainB.mousePressed(() => {
-		if(isNaN(trainIterationsInput.value()))			//Returns true if it's not a valid number
-			errorP.html('Please enter valid input!');
-		else{
-			errorP.html('');
-			trainIterations = Number(trainIterationsInput.value());
-			if(isDataLoaded)
-				train();
-			else
-				errorP.html('Data is still being loaded! Please wait...');
-		}
+	trainB.click(() => {
+		trainIterations = document.getElementById('trainIterations');
+		trainIterations = $(trainIterations).val();
+		if(isDataLoaded)
+			train();
+		else
+			messageP.html('Data is still being loaded! Please wait...');
 	});
-
-	testB.mousePressed(() => {
-		errorP.html('');
+	testB.click(() => {
+		messageP.html('');
 		if(isDataLoaded)
 			test();
 		else
-			errorP.html('Data is still being loaded! Please wait...');
-	})
-
-	predictB.mousePressed(() => {
+			messageP.html('Data is still being loaded! Please wait...');
+	});
+	predictB.click(() => {
 		let xs = canvasToMnistData();
 		predict(xs);
 	});
-
-	clearB.mousePressed(() => {
+	clearB.click(() => {
 		clear();
 		background(0);
 		stroke(255);
 		strokeWeight(factor*2);
 	});
 
+	createPlot();
 	createModel();
 
-	// Defining the parameters
-	trainBatchSize = testBatchSize = 64;
-	trainIterations = 1000;
-	validationBatchSize = 1000;
-	validationIterationFrequency = 5;
+	// Loading the MNIST dataset
+	messageP.html('Loading the Data...');
+	data = new MnistData();
+	await data.load();
+	isDataLoaded = true;
+	messageP.html('Data Loaded.');
 }
 
 function draw(){
-	// Checking for relayout
-	// if(totalPoints > maxPoints){
-	// 	let x = totalPoints - maxPoints;
-	// 	let y = totalPoints;
-	// 	let x1 = map(x,x,y,0,0.45);
-	// 	let x2 = map(x,x,y,0.55,1);
-	// 	Plotly.relayout('chart',{
-	// 		xaxis1: {range: [totalPoints-maxPoints,totalPoints]},
-	// 		xaxis2: {range: [totalPoints-maxPoints,totalPoints]}
-	// 	});
-	// }
-	// addPoint(Math.random(),Math.random());
+	// Checking if points cross a certain amount to have relayout
+	if(totalPoints > maxPoints){
+		Plotly.relayout('lossChart',{
+			xaxis: {range: [totalPoints-maxPoints,totalPoints]}
+		});
+		Plotly.relayout('accuracyChart',{
+			xaxis: {range: [totalPoints-maxPoints,totalPoints]}
+		});
+	}
 
 	// Drawing the number
 	if(mouseIsPressed)
 		line(pmouseX,pmouseY,mouseX,mouseY);
 }
 
-// Creating the plot
+// Function to create all the plots
 function createPlot(){
-	let lossTrace = {
+	let contentInnerWidth;
+	let contentInnerHeight = 500;
+
+	//Creating the loss plot
+	contentInnerWidth = $('#lossChart').innerWidth()*0.9;
+	let plotData = [{
 		y: [],
-		xaxis: 'x1',
-		yaxis: 'y1',
 		type: 'line',
 		name: 'Loss',
 		connectgaps: true
+	}];
+	let layout = {
+		title: 'Loss Results',
+		autosize: true,
+		showlegend: true,
+		margin: {l: 0, r: 0, p: 0},
+		width: contentInnerWidth,
+		height: contentInnerHeight,
+		yaxis: {title: 'Loss'},
+		xaxis: {title: 'Epoch'}
 	};
-	let accuracyTrace = {
+	Plotly.newPlot('lossChart',plotData,layout);
+
+	// Creating the accuracy plot
+	contentInnerWidth = $('#accuracyChart').innerWidth()*0.9;
+	plotData = [{
 		y: [],
-		xaxis: 'x2',
-		yaxis: 'y2',
 		type: 'line',
 		name: 'Accuracy',
+		line: {color: 'rgb(243, 156, 18)'},
 		connectgaps: true
-	};
-	let plotData = [lossTrace, accuracyTrace];
-	let layout = {
-		title: 'Train Results',
+	}];
+	layout = {
+		title: 'Accuracy Results',
 		autosize: true,
-		width: windowWidth,
-		height: windowHeight/1.5,
 		showlegend: true,
-		yaxis1: {title: 'Loss'},
-		xaxis1: {
-			title: 'Epoch',
-			domain: [0, 0.45]
-		},
-		xaxis2: {
-			title: 'Epoch',
-			domain: [0.55, 1]
-		},
-		yaxis2: {
-			title: 'Accuracy',
-			anchor: 'x2'
-		}
+		margin: {l: 0, r: 0, p: 0},
+		width: contentInnerWidth,
+		height: contentInnerHeight,
+		xaxis: {title: 'Epoch'},
+		yaxis: {title: 'Accuracy'}
 	};
-	Plotly.newPlot('chart',plotData,layout);
+	Plotly.newPlot('accuracyChart',plotData,layout);
+
+	// Creating the prediction plot
+	contentInnerWidth = $('#predictChart').innerWidth()*0.9;
+	plotData = [{
+		x: [0,1,2,3,4,5,6,7,8,9],
+		y: [],
+		type: 'bar',
+		marker:{
+			color: [
+				'rgba(192, 57, 43,0.75)',
+				'rgba(155, 89, 182,0.75)',
+				'rgb(41, 128, 185,0.75)',
+				'rgba(26, 188, 156,0.75)',
+				'rgba(39, 174, 96,0.75)',
+				'rgba(241, 196, 15,0.75)',
+				'rgba(230, 126, 34,0.75)',
+				'rgba(52, 152, 219,0.75)',
+				'rgba(142, 68, 173,0.75)',
+				'rgba(231, 76, 60,0.75)'
+		]},
+	}];
+	layout = {
+		title: 'Prediction Results',
+		autosize: true,
+		showlegend: false,
+		width: contentInnerWidth,
+		height: contentInnerHeight,
+		yaxis: {title: 'Score'},
+		xaxis: {title: 'Number',dtick: 1},
+	};
+	Plotly.newPlot('predictChart',plotData,layout);
 }
 
 // Creating the model
@@ -254,19 +283,18 @@ function compileModel(){
 	});
 }
 
-// Training the model
+// Function to train the model
 async function train(){
-	modelP.html('Training the Model...');
+	messageP.html('Training the Model...');
 	trainP.html('Train Results');
-	trainP.style('display','inline');
-	trainLossP.style('display','inline');
-	trainAccuracyP.style('display','inline');
-	trainIterationP.style('display','inline');
+	trainP.show();
+	trainLossP.show();
+	trainAccuracyP.show();
+	trainIterationP.show();
 
 	for(let i=0 ; i<trainIterations ; i++){
 		let validation_xs,validation_ys,validationBatch,validationData;
 		let train_xs,train_ys,trainBatch;
-		trainIterationVal = i+1;
 
 		// Creating the training batch
 		trainBatch = data.nextTrainBatch(trainBatchSize);
@@ -281,12 +309,15 @@ async function train(){
 			validationData = [validation_xs,validation_ys];
 		}
 
+		// Defining config properties
 		let config = {
 			batchSize: trainBatchSize,
 			validationData,
 			epochs: 1,
 			callbacks: {onBatchEnd: tf.nextFrame}
 		};
+
+		// Training the model
 		await model.fit(train_xs,train_ys,config).then((response) => {
 			let loss = response.history.loss[0].toFixed(6);
 			trainLossP.html(`Loss: ${loss}`);
@@ -309,29 +340,26 @@ async function train(){
 		train_xs.dispose();
 		train_ys.dispose();
 	}
-	modelP.html('Training Completed.');
+
+	messageP.html('Training Completed.');
 }
 
 // Function to test the accuracy of the model
 async function test(){
-	modelP.html('Testing the Model...');
+	messageP.html('Testing the Model...');
 	for(let i=0 ; i<60 ; i++)
 		await tf.nextFrame();
 	testP.html('Test Results');
-	testP.style('display','inline');
-	testLossP.style('display','inline');
-	testAccuracyP.style('display','inline');
+	testP.show();
+	testLossP.show();
+	testAccuracyP.show();
+
 	// Creating the test data
 	let testBatch = data.nextTestBatch(10000);
 	let test_xs = testBatch.xs.reshape([10000,28,28,1]);
 	let test_ys = testBatch.labels;
 
 	// Evaluates and returns an array with 2 values, the loss and the accuracy.
-	let config = {
-		callbacks: {
-			onBatchEnd: tf.nextFrame
-		}
-	}
 	let results = tf.tidy(() => model.evaluate(test_xs,test_ys));
 	let loss = results[0].dataSync()[0].toFixed(6);
 	let accuracy = (results[1].dataSync()*100).toFixed(2);
@@ -346,18 +374,21 @@ async function test(){
 	results[0].dispose();
 	results[1].dispose();
 
-	modelP.html('Testing Completed.');
+	messageP.html('Testing Completed.');
 }
 
 // Function to predict the number given the pixel array of an image with 784 values
 function predict(predict_x){
-	predict.style('display','inline');
+	predictP.style('display','inline');
 	let test_xs = tf.tensor(predict_x,[1,28,28,1]);
-	let test_ys = tf.tidy(() => model.predict(test_xs).argMax(1));
-	let prediction = test_ys.dataSync()[0];
-	predictP.html(`Prediction: ${prediction}`);
+	let test_ys = tf.tidy(() => model.predict(test_xs));
+	let scores = test_ys.dataSync();
+	let prediction = test_ys.argMax(1).dataSync()[0];
 	test_xs.dispose();
 	test_ys.dispose();
+
+	plotPrediction(scores);
+	predictP.html(`Prediction: ${prediction}`);
 }
 
 // Function to covert the canvas data to the size of mnist data
