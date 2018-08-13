@@ -7,6 +7,7 @@
 /* Centering all the elements */
 *{
 	margin: 0 auto;
+	font-family: 'Dosis', sans-serif;
 	font-size: 18px;
 }
 html,body{
@@ -21,7 +22,6 @@ html,body{
 
 .btn-success{
 	border-radius: 2.5px;
-	font-family: 'Dosis', sans-serif;
 }
 
 br{
@@ -30,12 +30,7 @@ br{
 
 p{
 	margin: 0 5px;
-	display: inline;
-	font-family: 'Dosis', sans-serif;
-}
-
-button{
-	margin: 0 0.5vw;
+	display: inline-block;
 }
 
 .form-control{
@@ -43,4 +38,30 @@ button{
 	width: 80px;
 	height: 35px;
 	margin: 0 auto;
+}
+
+#canvas{
+	display: block;
+}
+
+#results {
+    width: 315px;
+    height: 125px;
+    margin: 10px auto;
+	border-style: double;
+	border-radius: 10px;
+}
+
+#train, #test{
+	text-align: left;
+	padding: 5px;
+}
+
+#train{
+	float: left;
+	width: 48%;
+}
+
+#test{
+	margin-left: 52%;
 }
