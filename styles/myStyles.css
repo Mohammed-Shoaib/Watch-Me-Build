@@ -40,14 +40,6 @@ p{
 	margin: 0 auto;
 }
 
-/* To lock the canvas from scrolling on mobile*/
-.lock-screen {
-    height: 100%;
-    overflow: hidden;
-    width: 100%;
-    position: fixed;
-}
-
 #canvas{
 	display: block;
 }
