@@ -1,12 +1,12 @@
 let cnv,size,factor;
 let data,isDataLoaded,model;
+let totalPoints,maxPoints,isMousePressed;
 let messageP;
 let trainP,trainLossP,trainAccuracyP,trainIterationP;
 let testP,testLossP,testAccuracyP;
 let predictP;
 let trainBatchSize,testBatchSize,validationBatchSize;
 let trainIterations,validationIterationFrequency;
-let totalPoints,maxPoints;
 
 function windowResized(){
 	let contentInnerWidth,update;
@@ -26,16 +26,6 @@ function windowResized(){
 	Plotly.relayout('predictChart', update);
 }
 
-function addPoint(lossY,accuracyY){
-	Plotly.extendTraces('lossChart',{y:[[lossY]]}, [0]);
-	Plotly.extendTraces('accuracyChart',{y:[[accuracyY]]}, [0]);
-	totalPoints++;
-}
-
-function plotPrediction(scores){
-	Plotly.restyle('predictChart','y',[scores]);
-}
-
 async function setup(){
 	// To use the Pixel array
 	pixelDensity(1);
@@ -43,6 +33,7 @@ async function setup(){
 	// Initializing the variables
 	totalPoints = 0;
 	maxPoints = 500;
+	isMousePressed = false;
 	messageP = $(document.getElementById('message'));
 	loadB = $(document.getElementById('loadB'));
 	trainB = $(document.getElementById('trainB'));
@@ -143,7 +134,7 @@ function draw(){
 	}
 
 	// Drawing the number
-	if(mouseIsPressed)
+	if(isMousePressed)
 		line(pmouseX,pmouseY,mouseX,mouseY);
 }
 
@@ -460,4 +451,26 @@ function RGB2GRAY(col){
 	gWeight = 0.7152;
 	bWeight = 0.0722;
 	return rWeight*col.r + gWeight*col.g + bWeight*col.b;
+}
+
+function addPoint(lossY,accuracyY){
+	Plotly.extendTraces('lossChart',{y:[[lossY]]}, [0]);
+	Plotly.extendTraces('accuracyChart',{y:[[accuracyY]]}, [0]);
+	totalPoints++;
+}
+
+function plotPrediction(scores){
+	Plotly.restyle('predictChart','y',[scores]);
+}
+
+function mousePressed(){
+	isMousePressed = true;
+	pmouseX = mouseX;
+	pmouseY = mouseY;
+	return false;
+}
+
+function mouseReleased(){
+	isMousePressed = false;
+	return false;
 }
