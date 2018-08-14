@@ -87,7 +87,7 @@ async function setup(){
 	});
 	trainB.click(() => {
 		trainIterations = document.getElementById('trainIterations');
-		trainIterations = $(trainIterations).val();
+		trainIterations = Number($(trainIterations).val());
 		if(isDataLoaded)
 			train();
 		else
@@ -466,5 +466,4 @@ function plotPrediction(scores){
 function mousePressed(){
 	pmouseX = mouseX;
 	pmouseY = mouseY;
-	return false;
 }
