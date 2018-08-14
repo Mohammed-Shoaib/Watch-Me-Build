@@ -1,6 +1,6 @@
 let cnv,size,factor;
 let data,isDataLoaded,model;
-let totalPoints,maxPoints,isMousePressed;
+let totalPoints,maxPoints;
 let messageP;
 let trainP,trainLossP,trainAccuracyP,trainIterationP;
 let testP,testLossP,testAccuracyP;
@@ -134,7 +134,7 @@ function draw(){
 	}
 
 	// Drawing the number
-	if(isMousePressed)
+	if(mouseIsPressed)
 		line(pmouseX,pmouseY,mouseX,mouseY);
 }
 
@@ -464,13 +464,7 @@ function plotPrediction(scores){
 }
 
 function mousePressed(){
-	isMousePressed = true;
 	pmouseX = mouseX;
 	pmouseY = mouseY;
-	return false;
-}
-
-function mouseReleased(){
-	isMousePressed = false;
 	return false;
 }
