@@ -4,7 +4,7 @@ A digit recognizer using the MNIST Dataset built using TensorFlow.js
 ## Demo
 ![Demo](https://media.giphy.com/media/2jMfSdoee1VEWLGz3A/giphy.gif)
 
-Click [here](https://shoaib98libra.github.io/Digit-Recognizer/) to check out the live version.
+Click [here](https://mohammed-shoaib.github.io/Digit-Recognizer/) to check out the live version.
 
 ## Architecture
 
