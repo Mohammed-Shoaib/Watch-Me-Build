@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<title>Handwritten Digit Recognizer</title>
+		<!-- CSS Styling -->
+		<link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="styles/myStyles.css">
+		<!-- Scripts -->
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.5"></script>
+		<script type="text/javascript" src="libraries/p5.js"></script>
+		<script type="text/javascript" src="libraries/p5.dom.js"></script>
+		<script type="text/javascript" src="libraries/p5.sound.js"></script>
+		<script type="text/javascript" src="libraries/jquery.min.js"></script>
+		<script type="text/javascript" src="webcam.js"></script>
+		<script type="text/javascript" src="controller_dataset.js"></script>
+		<script type="text/javascript" src="index.js"></script>
+	</head>
+
+	<body>
+		<div class='container-fluid'>
+			<div class='row'>
+				<div class='xs-col-4' id='canvas-container'></div>
+				<div class='xs-col-4' id='content'>
+					<p id='messageP'></p><br/>
+					<p>Pose: </p>
+					<input type='text' class='form-control' id='pose' value='A'>
+					<p>Number of Examples: </p>
+					<input type='number' class='form-control' id='numOfExamples' value=100 min=1 oninput="validity.valid||(value='');"><br/>
+					<button type='button' class='btn btn-primary' id='addExamplesB'>Add Examples</button><br/>
+					<p>Train Iterations: </p>
+					<input type='number' class='form-control' id='trainIterations' value=100 min=1 oninput="validity.valid||(value='');">
+					<button type='button' class='btn btn-primary' id='trainB'>Train</button><br/>
+					<div id=trainResults>
+						<p>Train Results</p>
+						<p id='trainLossP'>Loss:</p>
+						<p id='trainAccuracyP'>Accuracy:</p>
+						<p id='trainIterationP'>Iteration:</p>
+					</div>
+					<button type='button' class='btn btn-primary' id='predictB'>Predict</button>
+					<p>Prediction: </p>
+				</div>
+				<div class='xs-col-4' id='webcam-container'></div>
+			</div>
+		</div>
+	</body>
+
+</html>
