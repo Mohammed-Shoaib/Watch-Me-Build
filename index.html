@@ -3,7 +3,7 @@
 <html>
 
 	<head>
-		<title>Handwritten Digit Recognizer</title>
+		<title>Hand Gesture Estimation</title>
 		<!-- CSS Styling -->
 		<link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="styles/myStyles.css">
@@ -25,10 +25,10 @@
 				<div class='xs-col-4' id='content'>
 					<p id='messageP'></p><br/>
 					<p>Pose: </p>
-					<input type='text' class='form-control' id='pose' value='A'>
+					<input type='text' class='form-control' id='pose' value='A' maxlength="1" style="text-transform:uppercase" pattern='[A-Z]'>
 					<p>Number of Examples: </p>
 					<input type='number' class='form-control' id='numOfExamples' value=100 min=1 oninput="validity.valid||(value='');"><br/>
-					<button type='button' class='btn btn-primary' id='addExamplesB'>Add Examples</button><br/>
+					<button type='button' class='btn btn-primary' id='saveExamplesB'>Save Examples</button><br/>
 					<p>Train Iterations: </p>
 					<input type='number' class='form-control' id='trainIterations' value=100 min=1 oninput="validity.valid||(value='');">
 					<button type='button' class='btn btn-primary' id='trainB'>Train</button><br/>

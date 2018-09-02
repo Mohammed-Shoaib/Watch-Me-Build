@@ -1,4 +1,4 @@
-let cnv, size;
+let cnv, size,labels;
 let messageP,trainLossP,trainAccuracyP;
 let mobilenet,model,capture,json_data;
 
@@ -26,6 +26,11 @@ async function setup(){
 	capture.parent('webcam-container');
 	capture.size(IMG_WIDTH*aspectRatio,IMG_HEIGHT*aspectRatio);
 
+	// Defining the labels
+	labels = {};
+	for(let i=0 ; i<NUM_CLASSES ; i++)
+		labels[String.fromCharCode(65 + i)] = i;
+
 	// Loading the mobilenet model
 	mobilenet = await loadMobileNet();
 	console.log("Model Loaded.");
@@ -34,29 +39,20 @@ async function setup(){
 	messageP = $(document.getElementById('messageP'));
 	trainLossP = $(document.getElementById('trainLossP'));
 	trainAccuracyP = $(document.getElementById('trainAccuracyP'));
-	addExamplesB = $(document.getElementById('addExamplesB'));
+	saveExamplesB = $(document.getElementById('saveExamplesB'));
 	trainB = $(document.getElementById('trainB'));
 	predictB = $(document.getElementById('predictB'));
 
 	// Defining the onClick functions for the buttons
-	addExamplesB.click(async() => {
+	saveExamplesB.click(async() => {
 		let pose = $(document.getElementById('pose')).val();
 		let numOfExamples = $(document.getElementById('numOfExamples')).val();
 		if(numOfExamples<0 || numOfExamples.length<=0)
 			messageP.html('Please enter a number!');
 		else if(pose.length<=0)
 			messageP.html('Please enter a Pose!');
-		else{
-			messageP.html('Adding Examples...');
-			for(let i=1 ; i<=numOfExamples ; i++){
-				messageP.html(`Example ${i}`);
-				let x = await createWebcamTensor().data();
-				await tf.nextFrame();
-				let y = Number(pose);
-				json_data.push({x,y});
-			}
-			messageP.html('Done adding Examples.');
-		}
+		else
+			saveExamples();
 	});
 	trainB.click(() => {
 		let trainIterations = Number($(document.getElementById('trainIterations')).val());
@@ -67,7 +63,6 @@ async function setup(){
 	});
 	predictB.click(() => {});
 
-	json_data = [];
 	createModel();
 }
 
@@ -79,15 +74,17 @@ async function draw(){
 	background(0);
 	image(capture,0,0);
 	filter(THRESHOLD,0.7);
+	filter(INVERT);
 }
 
 // Returns a model that outputs an internal activation.
 async function loadMobileNet(){
 	const mobilenet = await tf.loadModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
-  const layer = mobilenet.getLayer('conv_pw_13_relu');
-  return tf.model({inputs: mobilenet.inputs, outputs: layer.output});
+	const layer = mobilenet.getLayer('conv_pw_13_relu');
+	return tf.model({inputs: mobilenet.inputs, outputs: layer.output});
 }
 
+// Creates the model that takes in the internal activation of mobilenet as input and outputs a pose
 function createModel(){
 	model = tf.sequential();
 	model.add(tf.layers.flatten({inputShape: [7,7,256]}));
@@ -111,6 +108,7 @@ function createModel(){
 }
 
 async function train(){
+	messageP.html('Training the model...')
 	// Creating the Tensors
 	let xs = [];
 	let ys = [];
@@ -119,8 +117,9 @@ async function train(){
 			xs.push(json_data[i].x[j]);
 		ys.push(json_data[i].y);
 	}
-	let train_xs = tf.tensor4d(xs,[json_data.length,IMG_WIDTH,IMG_HEIGHT,1],'float32');
+	let train_xs = tf.tensor4d(xs,[json_data.length,IMG_WIDTH,IMG_HEIGHT,3],'float32');
 	let train_ys = tf.oneHot(ys,NUM_CLASSES);
+	mobilenet.predict(train_xs);
 
 	// Defining config properties
 	let config = {
@@ -138,23 +137,38 @@ async function train(){
 	// 	let iterations = i+1;
 	// 	trainIterationP.html(`Iterations: ${iterations}`);
 	// });
+	messageP.html('Training Completed.');
 }
 
 
 // Helper functions
 
+async function saveExamples(){
+	messageP.html('Adding Examples...');
+	let poseCount = 1;
+	for(let i=1 ; i<=numOfExamples ; i++){
+		messageP.html(`Example ${i}`);
+		save(`${pose}(${poseCount}).jpg`)
+		for(let i=0 ; i<10 ; i++)
+			await tf.nextFrame();
+		poseCount++;
+	}
+	messageP.html('Done adding Examples.');
+}
+
 function createWebcamTensor(){
 	// Get the img from the canvas and normalize the values
 	let webcamImg = [];
 	loadPixels();
-	for(let j=0 ; j<height ; j++){
+	for(let j=0 ; j<height ; j++)
 		for(let i=0 ; i<width ; i++){
 			let pix = (i + j*width)*4;
-			webcamImg.push(map(pixels[pix],0,255,0,1));
+			webcamImg.push(map(pixels[pix+0],0,255,0,1));
+			webcamImg.push(map(pixels[pix+1],0,255,0,1));
+			webcamImg.push(map(pixels[pix+2],0,255,0,1));
 		}
-	}
 	return tf.tidy(() => {
-	const webcamImage = tf.tensor3d(webcamImg,[width,height,1]);
+	const webcamImage = tf.tensor3d(webcamImg,[width,height,3]);
 	const croppedImage = cropImage(webcamImage);
 	const batchedImage = croppedImage.expandDims(0);
 	return batchedImage.toFloat().div(127).sub(1);
