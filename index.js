@@ -31,8 +31,9 @@ async function setup(){
 	for(let i=0 ; i<NUM_CLASSES ; i++)
 		labels[String.fromCharCode(65 + i)] = i;
 
-	// Loading the mobilenet model
-	mobilenet = await loadMobileNet();
+	// Loading the pretrained models
+	mobilenet = await tf.loadModel('./MobileNet/model.json');
+	model = await tf.loadModel('./Model/model.json');
 	console.log("Model Loaded.");
 
 	// Initializing the variables
@@ -42,6 +43,7 @@ async function setup(){
 	saveExamplesB = $(document.getElementById('saveExamplesB'));
 	trainB = $(document.getElementById('trainB'));
 	predictB = $(document.getElementById('predictB'));
+	predictP = $(document.getElementById('predictP'));
 
 	// Defining the onClick functions for the buttons
 	saveExamplesB.click(async() => {
@@ -61,9 +63,17 @@ async function setup(){
 		else
 			train();
 	});
-	predictB.click(() => {});
-
-	createModel();
+	predictB.click(async() => {
+		messageP.html('Predicting...');
+		await tf.nextFrame();
+		let x = await createWebcamTensor();
+		let activation = await mobilenet.predict(x);
+		let y = await model.predict(activation).argMax(1).data();
+		for(key in labels)
+			if(labels[key] == y)
+				predictP.html(key);
+		messageP.html('Prediction Complete.');
+	});
 }
 
 function resetSketch(){
@@ -87,7 +97,7 @@ async function loadMobileNet(){
 // Creates the model that takes in the internal activation of mobilenet as input and outputs a pose
 function createModel(){
 	model = tf.sequential();
-	model.add(tf.layers.flatten({inputShape: [7,7,256]}));
+	model.add(tf.layers.flatten({inputShape: [7,7,1024]}));
 	model.add(tf.layers.dense({
 		units: 100,
 		activation: 'relu',
@@ -163,9 +173,9 @@ function createWebcamTensor(){
 	for(let j=0 ; j<height ; j++)
 		for(let i=0 ; i<width ; i++){
 			let pix = (i + j*width)*4;
-			webcamImg.push(map(pixels[pix+0],0,255,0,1));
-			webcamImg.push(map(pixels[pix+1],0,255,0,1));
-			webcamImg.push(map(pixels[pix+2],0,255,0,1));
+			webcamImg.push(map(pixels[pix+0],0,255,-1,1));
+			webcamImg.push(map(pixels[pix+1],0,255,-1,1));
+			webcamImg.push(map(pixels[pix+2],0,255,-1,1));
 		}
 	return tf.tidy(() => {
 	const webcamImage = tf.tensor3d(webcamImg,[width,height,3]);
