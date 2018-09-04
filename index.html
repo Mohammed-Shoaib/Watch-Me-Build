@@ -27,14 +27,6 @@
 					<p>Number of Examples: </p>
 					<input type='number' class='form-control' id='numOfExamples' value=100 min=1 oninput="validity.valid||(value='');"><br/>
 					<button type='button' class='btn btn-primary' id='saveExamplesB'>Save Examples</button><br/>
-					<p>Train Iterations: </p>
-					<input type='number' class='form-control' id='trainIterations' value=100 min=1 oninput="validity.valid||(value='');">
-					<button type='button' class='btn btn-primary' id='trainB'>Train</button><br/>
-					<div id=trainResults>
-						<p>Train Results</p>
-						<p id='trainLossP'>Loss:</p>
-						<p id='trainAccuracyP'>Accuracy:</p>
-						<p id='trainIterationP'>Iteration:</p>
 					</div>
 					<button type='button' class='btn btn-primary' id='predictB'>Predict</button><br/>
 					<p id='predictP'></p>

@@ -40,8 +40,7 @@ def load_json_s():
 root_path = 'data/'
 labels = os.listdir(root_path + 'Images/')
 for label in labels:
-    label_dir = label
-    label_dir = root_path + 'Images/' + label_dir
+    label_dir = root_path + 'Images/' + label
     if os.path.isfile(label_dir):
         continue
     else:
@@ -59,6 +58,7 @@ for label in labels:
             continue
 
         # Getting all the images in the directory and storing in a data object
+        label_dir = root_path + 'Images/' + label + '/'
         label_dir = label_dir + label_1000 + '/'
         label_images = os.listdir(label_dir)
         data = load_json_s()

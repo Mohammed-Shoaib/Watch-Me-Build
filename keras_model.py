@@ -93,7 +93,7 @@ def create_model():
                     use_bias=False))
 
     # Compiling the model
-    adam = keras.optimizers.adam(lr=0.1)
+    adam = keras.optimizers.adam(lr=0.01)
     model.compile(optimizer=adam,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
@@ -105,8 +105,8 @@ def train(train_xs, train_ys, test_xs, test_ys):
     model.fit(train_xs, train_ys,
               batch_size=BATCH_SIZE,
               validation_data=(test_xs, test_ys),
-              epochs=10,
-              #shuffle=True,
+              epochs=10000,
+              shuffle=True,
               verbose=1)
     print("Finished training the model.")
 
@@ -148,6 +148,8 @@ file_name = 'train_ys'
 train_ys = load_pickle_object(file_name, pickle_path)
 file_name = 'test_ys'
 test_ys = load_pickle_object(file_name, pickle_path)
+train_ys = train_ys.astype(int)
+test_ys = test_ys.astype(int)
 
 # Creating and training the model
 create_model()
