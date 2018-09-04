@@ -1,8 +1,10 @@
-let cnv, size,labels;
-let messageP,mobilenet,model,capture,json_data;
+let cnv, size;
+let mobilenet, model, capture;
+let messageP, saveExamplesB, predictB, predictP, predictC, predictFrame;
+let count;
 
+const LABELS = {'A': 0, 'Y': 1};
 const NUM_CLASSES = 2;
-const BATCH_SIZE = 64;
 const IMG_WIDTH = 224;
 const IMG_HEIGHT = 224;
 
@@ -21,21 +23,19 @@ async function setup(){
 	capture.parent('webcam-container');
 	capture.size(IMG_WIDTH*aspectRatio,IMG_HEIGHT*aspectRatio);
 
-	// Defining the labels
-	labels = {};
-	for(let i=0 ; i<NUM_CLASSES ; i++)
-		labels[String.fromCharCode(65 + i)] = i;
-
-	// Loading the pretrained models
-	mobilenet = await tf.loadModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
-	model = await tf.loadModel('./Model/model.json');
-	console.log("Model Loaded.");
-
 	// Initializing the variables
 	messageP = $(document.getElementById('messageP'));
 	saveExamplesB = $(document.getElementById('saveExamplesB'));
-	predictB = $(document.getElementById('predictB'));
 	predictP = $(document.getElementById('predictP'));
+	predictB = $(document.getElementById('predictB'));
+	predictC = $(document.getElementById('predictC'));
+	predictFrame = false;
+
+	// Loading the pretrained models
+	messageP.html('Loading the model...');
+	mobilenet = await loadMobileNet();
+	model = await tf.loadModel('./Model/model.json');
+	messageP.html("Model Loaded.");
 
 	// Defining the onClick functions for the buttons
 	saveExamplesB.click(async() => {
@@ -48,17 +48,19 @@ async function setup(){
 		else
 			saveExamples(pose, numOfExamples);
 	});
-	predictB.click(async() => {
-		messageP.html('Predicting...');
-		await tf.nextFrame();
-		let x = await createWebcamTensor();
-		let activation = await mobilenet.predict(x);
-		let y = await model.predict(activation).argMax(1).data();
-		for(key in labels)
-			if(labels[key] == y)
-				predictP.html(key);
-		messageP.html('Prediction Complete.');
+	predictB.click(predict);
+	predictC.click(() => {
+		if(predictC.is(':checked')){
+			predictFrameD = $(document.getElementById('predictFrame'));
+			predictFrameD.hide();
+			predictFrame = true;
+		}else{
+			predictFrameD = $(document.getElementById('predictFrame'));
+			predictFrameD.show();
+			predictFrame = false;
+		}
 	});
+	count = 0;
 }
 
 async function draw(){
@@ -67,7 +69,32 @@ async function draw(){
 	image(capture,0,0);
 	filter(THRESHOLD,0.7);
 	filter(INVERT);
+	if(predictFrame){
+		if(count%60 == 0){
+			await predict();
+			count = 0;
+		}
+		count++;
+	}
 }
+
+async function predict(){
+	let x = await createWebcamTensor();
+	let activation = await mobilenet.predict(x);
+	let y = tf.tidy(() => model.predict(activation).argMax(1));
+	let output = await y.data();
+	for(key in LABELS)
+		if(LABELS[key] == output)
+			predictP.html(`Prediction: ${key}`);
+	// Memory management
+	x.dispose();
+	activation.dispose();
+	y.dispose();
+}
+
+
+
+// Helper functions
 
 // Returns a model that outputs an internal activation.
 async function loadMobileNet(){
@@ -76,33 +103,8 @@ async function loadMobileNet(){
 	return tf.model({inputs: mobilenet.inputs, outputs: layer.output});
 }
 
-// Creates the model that takes in the internal activation of mobilenet as input and outputs a pose
-function createModel(){
-	model = tf.sequential();
-	model.add(tf.layers.flatten({inputShape: [7,7,1024]}));
-	model.add(tf.layers.dense({
-		units: 100,
-		activation: 'relu',
-		kernelInitializer: 'varianceScaling',
-		useBias: true
-	}));
-	model.add(tf.layers.dense({
-		units: NUM_CLASSES,
-		activation: 'softmax',
-		kernelInitializer: 'varianceScaling',
-		useBias: false
-	}));
-
-	model.compile({
-		optimizer: tf.train.adam(0.1),
-		loss: 'categoricalCrossentropy'
-	});
-}
-
-
-
-// Helper functions
-
+// Function to save the canvas as example for training the model
+// The pose label and the number of examples to save is given by the user
 async function saveExamples(pose, numOfExamples){
 	messageP.html('Adding Examples...');
 	let poseCount = 1;
@@ -116,30 +118,19 @@ async function saveExamples(pose, numOfExamples){
 	messageP.html('Done adding Examples.');
 }
 
+// Function to take the canvas and convert it to a tensor with the format of MobileNet
 function createWebcamTensor(){
 	// Get the img from the canvas and normalize the values
 	let webcamImg = [];
 	loadPixels();
-	for(let j=0 ; j<height ; j++)
+	for(let j=0 ; j<height ; j++){
 		for(let i=0 ; i<width ; i++){
 			let pix = (i + j*width)*4;
-			webcamImg.push(map(pixels[pix+0],0,255,-1,1));
-			webcamImg.push(map(pixels[pix+1],0,255,-1,1));
-			webcamImg.push(map(pixels[pix+2],0,255,-1,1));
+			webcamImg.push(map(pixels[pix+0], 0, 255, -1, 1));
+			webcamImg.push(map(pixels[pix+1], 0, 255, -1, 1));
+			webcamImg.push(map(pixels[pix+2], 0, 255, -1, 1));
 		}
-	return tf.tidy(() => {
-	const webcamImage = tf.tensor3d(webcamImg,[width,height,3]);
-	const croppedImage = cropImage(webcamImage);
-	const batchedImage = croppedImage.expandDims(0);
-	return batchedImage.toFloat().div(127).sub(1);
-	});
-}
-
-function cropImage(img) {
-  const size = Math.min(img.shape[0], img.shape[1]);
-  const centerWidth = img.shape[0] / 2;
-  const beginWidth = centerWidth - (size / 2);
-  const centerHeight = img.shape[1] / 2;
-  const beginHeight = centerHeight - (size / 2);
-  return img.slice([beginWidth, beginHeight], [size, size]);
+	}
+	webcamImg = tf.tensor4d(webcamImg, [1, 224, 224, 3]);
+	return webcamImg;
 }
