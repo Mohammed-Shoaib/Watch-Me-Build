@@ -1,15 +1,10 @@
 let cnv, size,labels;
-let messageP,trainLossP,trainAccuracyP;
-let mobilenet,model,capture,json_data;
+let messageP,mobilenet,model,capture,json_data;
 
 const NUM_CLASSES = 2;
 const BATCH_SIZE = 64;
 const IMG_WIDTH = 224;
 const IMG_HEIGHT = 224;
-
-function windowResized(){
-	resetSketch();
-}
 
 async function setup(){
 	// To have uniformity for pixels across multiple devices
@@ -32,21 +27,13 @@ async function setup(){
 		labels[String.fromCharCode(65 + i)] = i;
 
 	// Loading the pretrained models
-	//mobilenet = await tf.loadModel('./MobileNet/model.json');
 	mobilenet = await tf.loadModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
 	model = await tf.loadModel('./Model/model.json');
-	// layers = mobilenet.layers;
-	// for(i=0 ; i<layers.length ; i++)
-	// 	console.log(layers[i].name, layers[i].output.shape);
-	// console.log(layers.length);
 	console.log("Model Loaded.");
 
 	// Initializing the variables
 	messageP = $(document.getElementById('messageP'));
-	trainLossP = $(document.getElementById('trainLossP'));
-	trainAccuracyP = $(document.getElementById('trainAccuracyP'));
 	saveExamplesB = $(document.getElementById('saveExamplesB'));
-	trainB = $(document.getElementById('trainB'));
 	predictB = $(document.getElementById('predictB'));
 	predictP = $(document.getElementById('predictP'));
 
@@ -61,13 +48,6 @@ async function setup(){
 		else
 			saveExamples(pose, numOfExamples);
 	});
-	trainB.click(() => {
-		let trainIterations = Number($(document.getElementById('trainIterations')).val());
-		if(trainIterations.length<=0)
-			messageP.html('Please enter a number!');
-		else
-			train();
-	});
 	predictB.click(async() => {
 		messageP.html('Predicting...');
 		await tf.nextFrame();
@@ -79,9 +59,6 @@ async function setup(){
 				predictP.html(key);
 		messageP.html('Prediction Complete.');
 	});
-}
-
-function resetSketch(){
 }
 
 async function draw(){
@@ -122,38 +99,6 @@ function createModel(){
 	});
 }
 
-async function train(){
-	messageP.html('Training the model...')
-	// Creating the Tensors
-	let xs = [];
-	let ys = [];
-	for(let i=0 ; i<json_data.length ; i++){
-		for(let j=0 ; j<json_data[i].x.length ; j++)
-			xs.push(json_data[i].x[j]);
-		ys.push(json_data[i].y);
-	}
-	let train_xs = tf.tensor4d(xs,[json_data.length,IMG_WIDTH,IMG_HEIGHT,3],'float32');
-	let train_ys = tf.oneHot(ys,NUM_CLASSES);
-	mobilenet.predict(train_xs);
-
-	// Defining config properties
-	let config = {
-		batchSize: BATCH_SIZE,
-		epochs: 1,
-		callbacks: {onBatchEnd: tf.nextFrame}
-	};
-
-	// Training the model
-	// await model.fit(train_xs,train_ys,config).then((response) => {
-	// 	let loss = response.history.loss[0].toFixed(6);
-	// 	trainLossP.html(`Loss: ${loss}`);
-	// 	let accuracy = (response.history.acc[0]*100).toFixed(2);
-	// 	trainAccuracyP.html(`Accuracy: ${accuracy}%`);
-	// 	let iterations = i+1;
-	// 	trainIterationP.html(`Iterations: ${iterations}`);
-	// });
-	messageP.html('Training Completed.');
-}
 
 
 // Helper functions
