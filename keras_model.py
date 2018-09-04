@@ -2,7 +2,8 @@ import os
 import json
 import pickle
 import numpy as np
-import scipy.misc as smp
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from random import randrange
 import keras
 from keras.models import Sequential
@@ -59,8 +60,8 @@ def show_image(image):
             pixel += 1
             pixel *= 127
             image[i][j] = np.full(3, pixel)
-    img = smp.toimage(image)
-    img.show()
+    plt.imshow(image, interpolation='nearest')
+    plt.show()
 
 
 def get_label(y):
@@ -73,7 +74,6 @@ def get_label(y):
 
 def create_model():
     """Creates the model"""
-    global model
     model = Sequential()
 
     # Creating the hidden layers
@@ -97,6 +97,7 @@ def create_model():
     model.compile(optimizer=adam,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
+    return model
 
 
 def train(train_xs, train_ys, test_xs, test_ys):
@@ -105,7 +106,7 @@ def train(train_xs, train_ys, test_xs, test_ys):
     model.fit(train_xs, train_ys,
               batch_size=BATCH_SIZE,
               validation_data=(test_xs, test_ys),
-              epochs=10000,
+              epochs=10,
               shuffle=True,
               verbose=1)
     print("Finished training the model.")
@@ -132,7 +133,7 @@ def predict_random(test_xs, test_ys, image=False):
     actual_y = get_label(test_ys[i])
     if image:
         show_image(test_xs[i])
-    print(predicted_y, actual_y)
+    print("Predicted: {} Actual: {}".format(predicted_y,actual_y))
 
 
 mobilenet = load_mobilenet()
@@ -152,10 +153,12 @@ train_ys = train_ys.astype(int)
 test_ys = test_ys.astype(int)
 
 # Creating and training the model
-create_model()
-train(train_activations, train_ys, test_activations, test_ys)
+model = create_model()
+# train(train_activations, train_ys, test_activations, test_ys)
+model.load_weights('../Model/model.h5')
 evaluate(test_activations, test_ys)
-predict_random(test_xs, test_ys, image=True)
+for i in range(10):
+    predict_random(test_xs, test_ys, image=True)
 
 # Saving the model and it's weights
 tfjs.converters.save_keras_model(model, 'Model')

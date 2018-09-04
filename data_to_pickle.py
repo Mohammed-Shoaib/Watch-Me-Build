@@ -43,7 +43,6 @@ def preprocess_data(data):
     data = np.array(data['entries'])
     # Shuffling the data
     np.random.shuffle(data)
-    data = data[:10]
     for i in range(len(data)):
         # Converting from GRAYSCALE to RGB by duplication of values
         for j in range(len(data[i]['pixels'])):
