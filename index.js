@@ -18,10 +18,8 @@ async function setup(){
 	cnv.parent('canvas-container');
 
 	// Creating the webcam element
-	let aspectRatio = 640/480;
 	capture = createCapture(VIDEO);
 	capture.parent('webcam-container');
-	capture.size(IMG_WIDTH*aspectRatio,IMG_HEIGHT*aspectRatio);
 
 	// Initializing the variables
 	messageP = $(document.getElementById('messageP'));
@@ -65,6 +63,16 @@ async function setup(){
 
 async function draw(){
 	// Drawing the webcam element
+	if(capture.loadedmetadata){
+		let aspectRatio = capture.width/capture.height;
+		let new_width = capture.width;
+		let new_height = capture.height;
+		if (capture.width >= capture.height)
+			new_width = IMG_WIDTH * aspectRatio;
+		else if (capture.width < capture.height)
+			new_height = IMG_HEIGHT / aspectRatio;
+		capture.size(new_width, new_height);
+	}
 	background(0);
 	image(capture,0,0);
 	filter(THRESHOLD,0.7);
