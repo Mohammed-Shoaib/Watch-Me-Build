@@ -32,8 +32,13 @@ async function setup(){
 		labels[String.fromCharCode(65 + i)] = i;
 
 	// Loading the pretrained models
-	mobilenet = await tf.loadModel('./MobileNet/model.json');
+	//mobilenet = await tf.loadModel('./MobileNet/model.json');
+	mobilenet = await tf.loadModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
 	model = await tf.loadModel('./Model/model.json');
+	// layers = mobilenet.layers;
+	// for(i=0 ; i<layers.length ; i++)
+	// 	console.log(layers[i].name, layers[i].output.shape);
+	// console.log(layers.length);
 	console.log("Model Loaded.");
 
 	// Initializing the variables
@@ -54,7 +59,7 @@ async function setup(){
 		else if(pose.length<=0)
 			messageP.html('Please enter a Pose!');
 		else
-			saveExamples();
+			saveExamples(pose, numOfExamples);
 	});
 	trainB.click(() => {
 		let trainIterations = Number($(document.getElementById('trainIterations')).val());
@@ -153,7 +158,7 @@ async function train(){
 
 // Helper functions
 
-async function saveExamples(){
+async function saveExamples(pose, numOfExamples){
 	messageP.html('Adding Examples...');
 	let poseCount = 1;
 	for(let i=1 ; i<=numOfExamples ; i++){
