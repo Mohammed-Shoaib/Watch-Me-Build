@@ -45,7 +45,10 @@ def preprocess_data(data):
     for i in range(len(data)):
         # Converting from GRAYSCALE to RGB by duplication of values
         for j in range(len(data[i]['pixels'])):
+            # Normalizing the values from 0 to 255 to -1 to 1
             pixel = data[i]['pixels'][j]
+            pixel = pixel/127 - 1
+            pixel = int(pixel)
             data[i]['pixels'][j] = np.full(3, pixel)
         # Shaping the pixels to a 224×224×3 numpy array
         data[i]['pixels'] = np.array(data[i]['pixels'])
@@ -114,6 +117,41 @@ def get_activations(xs):
     return xs_activations
 
 
+def create_pickle_objects():
+    """Creating the pickle objects for everything"""
+    print("Creating Pickle Objects...")
+
+    print('Creating data file')
+    file_path = pickle_path + 'data.pickle'
+    create_pickle(data, file_path)
+
+    print('Creating train_xs file')
+    file_path = pickle_path + 'train_xs.pickle'
+    create_pickle(train_xs, file_path)
+
+    print('Creating train_ys file')
+    file_path = pickle_path + 'train_ys.pickle'
+    create_pickle(train_ys, file_path)
+
+    print('Creating test_xs file')
+    file_path = pickle_path + 'test_xs.pickle'
+    create_pickle(test_xs, file_path)
+
+    print('Creating test_ys file')
+    file_path = pickle_path + 'test_ys.pickle'
+    create_pickle(test_ys, file_path)
+
+    print('Creating train_activations file')
+    file_path = pickle_path + 'train_activations.pickle'
+    create_pickle(train_activations, file_path)
+
+    print('Creating test_activations file')
+    file_path = pickle_path + 'test_activations.pickle'
+    create_pickle(test_activations, file_path)
+
+    print("Created Objects.")
+
+
 mobilenet = load_mobilenet()
 data_path = 'data/JSON Files/'
 pickle_path = 'data/Pickle Objects/'
@@ -123,21 +161,4 @@ data = preprocess_data(data)
 (train_xs, train_ys), (test_xs, test_ys) = split_data(data)
 train_activations = get_activations(train_xs)
 test_activations = get_activations(test_xs)
-
-# Creating the pickle objects for everything
-print("Creating Pickle Objects...")
-file_path = pickle_path + 'data.pickle'
-create_pickle(data, file_path)
-file_path = pickle_path + 'train_xs.pickle'
-create_pickle(train_xs, file_path)
-file_path = pickle_path + 'train_ys.pickle'
-create_pickle(train_ys, file_path)
-file_path = pickle_path + 'test_xs.pickle'
-create_pickle(test_xs, file_path)
-file_path = pickle_path + 'test_ys.pickle'
-create_pickle(test_ys, file_path)
-file_path = pickle_path + 'train_activations.pickle'
-create_pickle(train_activations, file_path)
-file_path = pickle_path + 'test_activations.pickle'
-create_pickle(test_activations, file_path)
-print("Created Objects.")
+create_pickle_objects()
