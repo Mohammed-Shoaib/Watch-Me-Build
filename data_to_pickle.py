@@ -2,6 +2,7 @@ import os
 import json
 import pickle
 import numpy as np
+from math import ceil
 import keras
 from keras.applications import MobileNet
 
@@ -13,7 +14,7 @@ mapping = {'A': 0, 'Y': 1}
 def load_mobilenet():
     """Loads the MobileNet model"""
     print("Loading the MobileNet model...")
-    mobilenet = MobileNet(weights='imagenet')
+    mobilenet = MobileNet(alpha=0.25)
     print("Model Loaded.")
     layer = mobilenet.get_layer('conv_pw_13_relu')
     return keras.Model(inputs=mobilenet.inputs, outputs=layer.output)
@@ -42,6 +43,7 @@ def preprocess_data(data):
     data = np.array(data['entries'])
     # Shuffling the data
     np.random.shuffle(data)
+    data = data[:10]
     for i in range(len(data)):
         # Converting from GRAYSCALE to RGB by duplication of values
         for j in range(len(data[i]['pixels'])):
@@ -117,39 +119,11 @@ def get_activations(xs):
     return xs_activations
 
 
-def create_pickle_objects():
-    """Creating the pickle objects for everything"""
-    print("Creating Pickle Objects...")
-
-    print('Creating data file')
-    file_path = pickle_path + 'data.pickle'
-    create_pickle(data, file_path)
-
-    print('Creating train_xs file')
-    file_path = pickle_path + 'train_xs.pickle'
-    create_pickle(train_xs, file_path)
-
-    print('Creating train_ys file')
-    file_path = pickle_path + 'train_ys.pickle'
-    create_pickle(train_ys, file_path)
-
-    print('Creating test_xs file')
-    file_path = pickle_path + 'test_xs.pickle'
-    create_pickle(test_xs, file_path)
-
-    print('Creating test_ys file')
-    file_path = pickle_path + 'test_ys.pickle'
-    create_pickle(test_ys, file_path)
-
-    print('Creating train_activations file')
-    file_path = pickle_path + 'train_activations.pickle'
-    create_pickle(train_activations, file_path)
-
-    print('Creating test_activations file')
-    file_path = pickle_path + 'test_activations.pickle'
-    create_pickle(test_activations, file_path)
-
-    print("Created Objects.")
+def chunk_data(data):
+    """Splits the given data into chunks of 1000 values and creates their pickle objects"""
+    total = ceil(len(data)/1000)
+    data = np.array_split(data, total)
+    return data
 
 
 mobilenet = load_mobilenet()
@@ -161,4 +135,54 @@ data = preprocess_data(data)
 (train_xs, train_ys), (test_xs, test_ys) = split_data(data)
 train_activations = get_activations(train_xs)
 test_activations = get_activations(test_xs)
-create_pickle_objects()
+
+
+# Chuncking the data
+data = chunk_data(data)
+train_xs = chunk_data(train_xs)
+train_ys = chunk_data(train_ys)
+test_xs = chunk_data(test_xs)
+test_ys = chunk_data(test_ys)
+train_activations = chunk_data(train_activations)
+test_activations = chunk_data(test_activations)
+
+
+# Creating Pickle Objects
+print("Creating Pickle Objects...")
+
+print('Creating data file')
+for i in range(len(data)):
+    file_path = pickle_path + 'data/' + 'data' + str(i+1) + '.pickle'
+    create_pickle(data[i], file_path)
+
+print('Creating train_xs file')
+for i in range(len(train_xs)):
+    file_path = pickle_path + 'train_xs/' + 'train_xs' + str(i+1) + '.pickle'
+    create_pickle(train_xs[i], file_path)
+
+print('Creating train_ys file')
+for i in range(len(train_ys)):
+    file_path = pickle_path + 'train_ys/' + 'train_ys' + str(i+1) + '.pickle'
+    create_pickle(train_ys[i], file_path)
+
+print('Creating test_xs file')
+for i in range(len(test_xs)):
+    file_path = pickle_path + 'test_xs/' + 'test_xs' + str(i+1) + '.pickle'
+    create_pickle(test_xs[i], file_path)
+
+print('Creating test_ys file')
+for i in range(len(test_ys)):
+    file_path = pickle_path + 'test_ys/' + 'test_ys' + str(i+1) + '.pickle'
+    create_pickle(test_ys[i], file_path)
+
+print('Creating train_activations file')
+for i in range(len(train_activations)):
+    file_path = pickle_path + 'train_activations/' + 'train_activations' + str(i+1) + '.pickle'
+    create_pickle(train_activations[i], file_path)
+
+print('Creating test_activations file')
+for i in range(len(test_activations)):
+    file_path = pickle_path + 'test_activations/' + 'test_activations' + str(i+1) + '.pickle'
+    create_pickle(test_activations[i], file_path)
+
+print("Created Objects.")
