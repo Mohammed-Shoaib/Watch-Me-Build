@@ -23,12 +23,14 @@
 				<div class='col-xs-12 col-md-4' id='canvas-container'></div>
 				<div class='col-xs-12 col-md-4' id='content'>
 					<p id='messageP'></p><br/>
+					<p>Threshold: </p>
+					<input type='range' id='threshold' value=0.7 min=0 max=1 step=0.01><br/>
 					<div id='predictFrame'>
-						<p>Pose: </p>
+						<!-- <p>Pose: </p>
 						<input type='text' class='form-control' id='pose' value='A' maxlength="1" style="text-transform:uppercase" pattern='[A-Z]'>
 						<p>Number of Examples: </p>
 						<input type='number' class='form-control' id='numOfExamples' value=100 min=1 oninput="validity.valid||(value='');"><br/>
-						<button type='button' class='btn btn-primary' id='saveExamplesB'>Save Examples</button><br/>
+						<button type='button' class='btn btn-primary' id='saveExamplesB'>Save Examples</button><br/> -->
 						<button type='button' class='btn btn-primary' id='predictB'>Predict</button><br/>
 					</div>
 					<p id='predictP'>Prediction: No Prediction</p><br/>
