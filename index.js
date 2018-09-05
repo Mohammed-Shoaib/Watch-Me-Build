@@ -1,6 +1,8 @@
 let cnv, size;
 let mobilenet, model, capture;
-let messageP, saveExamplesB, predictB, predictP, predictC, predictFrame;
+let messageP, saveExamplesB;
+let predictB, predictP, predictC, predictFrame;
+let threshold, thresholdVal;
 let count;
 
 const LABELS = {'A': 0, 'Y': 1};
@@ -28,14 +30,17 @@ async function setup(){
 	predictB = $(document.getElementById('predictB'));
 	predictC = $(document.getElementById('predictC'));
 	predictFrame = false;
+	threshold = $(document.getElementById('threshold'));
+	thresholdVal = parseFloat(threshold.val());
+	count = 0;
 
 	// Loading the pretrained models
 	messageP.html('Loading the model...');
 	mobilenet = await loadMobileNet();
 	model = await tf.loadModel('./Model/model.json');
-	messageP.html("Model Loaded.");
+	messageP.html('Model Loaded.');
 
-	// Defining the onClick functions for the buttons
+	// Defining the properties of elements
 	saveExamplesB.click(async() => {
 		let pose = $(document.getElementById('pose')).val();
 		let numOfExamples = $(document.getElementById('numOfExamples')).val();
@@ -58,24 +63,30 @@ async function setup(){
 			predictFrame = false;
 		}
 	});
-	count = 0;
-}
-
-async function draw(){
-	// Drawing the webcam element
-	if(capture.loadedmetadata){
+	threshold.on('input', () => {
+	   thresholdVal = parseFloat(threshold.val());
+	});
+	capture.elt.addEventListener('loadedmetadata', () => {
+		// Drawing the webcam element
 		let aspectRatio = capture.width/capture.height;
 		let new_width = capture.width;
 		let new_height = capture.height;
-		if (capture.width >= capture.height)
+		if (capture.width >= capture.height){
 			new_width = IMG_WIDTH * aspectRatio;
-		else if (capture.width < capture.height)
+			new_height = IMG_HEIGHT * aspectRatio;
+		}
+		else if (capture.width < capture.height){
+			new_width = IMG_WIDTH / aspectRatio;
 			new_height = IMG_HEIGHT / aspectRatio;
+		}
 		capture.size(new_width, new_height);
-	}
+	});
+}
+
+async function draw(){
 	background(0);
 	image(capture,0,0);
-	filter(THRESHOLD,0.7);
+	filter(THRESHOLD,thresholdVal);
 	filter(INVERT);
 	if(predictFrame){
 		if(count%60 == 0){
