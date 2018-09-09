@@ -5,8 +5,8 @@ let predictB, predictP, predictC, predictFrame;
 let threshold, thresholdVal;
 let count;
 
-const LABELS = {'A': 0, 'Y': 1};
-const NUM_CLASSES = 2;
+const NUM_CLASSES = 5
+const MAPPING = {'A': 0, 'OKAY': 1, 'PEACE': 2, 'THUMBS UP': 3, 'Y': 4}
 const IMG_WIDTH = 224;
 const IMG_HEIGHT = 224;
 
@@ -42,7 +42,7 @@ async function setup(){
 
 	// Defining the properties of elements
 	saveExamplesB.click(async() => {
-		let pose = $(document.getElementById('pose')).val();
+		let pose = $(document.getElementById('pose')).val().toUpperCase();
 		let numOfExamples = $(document.getElementById('numOfExamples')).val();
 		if(numOfExamples<0 || numOfExamples.length<=0)
 			messageP.html('Please enter a number!');
@@ -102,8 +102,8 @@ async function predict(){
 	let activation = await mobilenet.predict(x);
 	let y = tf.tidy(() => model.predict(activation).argMax(1));
 	let output = await y.data();
-	for(key in LABELS)
-		if(LABELS[key] == output)
+	for(key in MAPPING)
+		if(MAPPING[key] == output)
 			predictP.html(`Prediction: ${key}`);
 	// Memory management
 	x.dispose();

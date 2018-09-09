@@ -50,6 +50,10 @@ for label in labels:
         # File Path
         file_path = root_path + 'JSON Files/' + label + '/'
 
+        # Checking if the directory exists
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        
         # Checking if this directory has already been completed.
         files = os.listdir(file_path)
         for i in range(len(files)):

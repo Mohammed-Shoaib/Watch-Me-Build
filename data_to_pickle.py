@@ -7,8 +7,8 @@ import keras
 from keras.applications import MobileNet
 
 print("Done importing")
-NUM_CLASSES = 2
-mapping = {'A': 0, 'Y': 1}
+NUM_CLASSES = 5
+mapping = {'A': 0, 'OKAY': 1, 'PEACE': 2, 'THUMBS UP': 3, 'Y': 4}
 
 
 def load_mobilenet():
@@ -61,9 +61,10 @@ def preprocess_data(data):
     return data
 
 
-def load_data():
+def load_data(data_path, labels):
     data = load_json_s()
     for label in labels:
+        count= 0
         label_dir = data_path + label + '/'
         label_1000_dir = os.listdir(label_dir)
         for label_1000 in label_1000_dir:
@@ -71,6 +72,9 @@ def load_data():
             print("Loading " + label_1000)
             data_1000 = load_json_file(file_path)
             data['entries'].extend(data_1000['entries'])
+            count += 1
+            if count >= 1:
+                break
     return data
 
 
@@ -84,7 +88,7 @@ def split_data(data):
         data_labels.append(entry['label'])
 
     # Splitting the data
-    offset = int(len(data)*0.7)
+    offset = int(len(data)*0.8)
     train_xs = np.array(data_pixels[:offset])
     train_ys = np.array(data_labels[:offset])
     test_xs = np.array(data_pixels[offset:])
@@ -124,64 +128,88 @@ def chunk_data(data):
     data = np.array_split(data, total)
     return data
 
+def setup_dirs(pickle_path, labels):
+    """Some error handling for creating the directories if they don't already exist"""
+    if not os.path.isdir(pickle_path):
+            os.makedirs(pickle_path)
+    for label in labels:
+        file_path = pickle_path + 'data/' + label 
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        file_path = pickle_path + 'train_xs/' + label
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        file_path = pickle_path + 'train_ys/' + label
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        file_path = pickle_path + 'test_xs/' + label
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        file_path = pickle_path + 'test_ys/' + label
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        file_path = pickle_path + 'train_activations/' + label
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+        file_path = pickle_path + 'test_activations/' + label
+        if not os.path.isdir(file_path):
+            os.makedirs(file_path)
+
 
 mobilenet = load_mobilenet()
 data_path = 'data/JSON Files/'
 pickle_path = 'data/Pickle Objects/'
+if not os.path.isdir(data_path):
+    os.makedirs(data_path)
 labels = os.listdir(data_path)
-data = load_data()
-data = preprocess_data(data)
-(train_xs, train_ys), (test_xs, test_ys) = split_data(data)
-train_activations = get_activations(train_xs)
-test_activations = get_activations(test_xs)
+setup_dirs(pickle_path, labels)
 
 
-# Chuncking the data
-data = chunk_data(data)
-train_xs = chunk_data(train_xs)
-train_ys = chunk_data(train_ys)
-test_xs = chunk_data(test_xs)
-test_ys = chunk_data(test_ys)
-train_activations = chunk_data(train_activations)
-test_activations = chunk_data(test_activations)
+# Creates the pickle files for each label's json file.
+for label in labels:
+    label_dir = data_path + label + '/'
+    label_1000_dir = os.listdir(label_dir)
+    for label_1000 in label_1000_dir:
+        file_path = label_dir + label_1000
+        check_path = pickle_path + 'data/' + label + '/' + label_1000[:-5] + '.pickle'
+        if os.path.isfile(check_path):
+            continue
+        print("Loading " + label_1000)
+        data = load_json_file(file_path)
+        data = preprocess_data(data)
+        (train_xs, train_ys), (test_xs, test_ys) = split_data(data)
+        train_activations = get_activations(train_xs)
+        test_activations = get_activations(test_xs)
 
+        # Creating Pickle Objects
+        print("Creating Pickle Objects...")
+        label_1000 = label_1000[:-5]
+        print('Creating data file')
+        file_path = pickle_path + 'data/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(data, file_path)
 
-# Creating Pickle Objects
-print("Creating Pickle Objects...")
+        print('Creating train_xs file')
+        file_path = pickle_path + 'train_xs/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(train_xs, file_path)
 
-print('Creating data file')
-for i in range(len(data)):
-    file_path = pickle_path + 'data/' + 'data' + str(i+1) + '.pickle'
-    create_pickle(data[i], file_path)
+        print('Creating train_ys file')
+        file_path = pickle_path + 'train_ys/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(train_ys, file_path)
 
-print('Creating train_xs file')
-for i in range(len(train_xs)):
-    file_path = pickle_path + 'train_xs/' + 'train_xs' + str(i+1) + '.pickle'
-    create_pickle(train_xs[i], file_path)
+        print('Creating test_xs file')
+        file_path = pickle_path + 'test_xs/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(test_xs, file_path)
 
-print('Creating train_ys file')
-for i in range(len(train_ys)):
-    file_path = pickle_path + 'train_ys/' + 'train_ys' + str(i+1) + '.pickle'
-    create_pickle(train_ys[i], file_path)
+        print('Creating test_ys file')
+        file_path = pickle_path + 'test_ys/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(test_ys, file_path)
 
-print('Creating test_xs file')
-for i in range(len(test_xs)):
-    file_path = pickle_path + 'test_xs/' + 'test_xs' + str(i+1) + '.pickle'
-    create_pickle(test_xs[i], file_path)
+        print('Creating train_activations file')
+        file_path = pickle_path + 'train_activations/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(train_activations, file_path)
 
-print('Creating test_ys file')
-for i in range(len(test_ys)):
-    file_path = pickle_path + 'test_ys/' + 'test_ys' + str(i+1) + '.pickle'
-    create_pickle(test_ys[i], file_path)
+        print('Creating test_activations file')
+        file_path = pickle_path + 'test_activations/' + label + '/' + label_1000 + '.pickle'
+        create_pickle(test_activations, file_path)
 
-print('Creating train_activations file')
-for i in range(len(train_activations)):
-    file_path = pickle_path + 'train_activations/' + 'train_activations' + str(i+1) + '.pickle'
-    create_pickle(train_activations[i], file_path)
-
-print('Creating test_activations file')
-for i in range(len(test_activations)):
-    file_path = pickle_path + 'test_activations/' + 'test_activations' + str(i+1) + '.pickle'
-    create_pickle(test_activations[i], file_path)
-
-print("Created Objects.")
+        print("Created Objects.")
