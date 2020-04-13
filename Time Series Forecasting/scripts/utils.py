@@ -93,7 +93,7 @@ def get_cases(path: str, country: str) -> List[int]:
 
 
 
-def load_dataframe(country: str = "") -> pd.DataFrame:
+def load_dataframe(country: str="") -> pd.DataFrame:
 	"""
 	Creates a DataFrame based on the DATES with columns for each parameter of interest.
 	
@@ -140,7 +140,7 @@ def dickey_fuller(df: pd.DataFrame) -> None:
 
 
 
-def get_stationary(df: pd.DataFrame, col:str) -> pd.DataFrame:
+def get_stationary(df: pd.DataFrame, col: str) -> pd.DataFrame:
 	"""
 	Creates a stationary DataFrame from the original by using second-order differencing.
 	Also, prints the results using each method for converting the dataset to stationary.
@@ -202,6 +202,61 @@ def get_stationary(df: pd.DataFrame, col:str) -> pd.DataFrame:
 	dickey_fuller(df_diff_2[col])
 
 	return df_diff_2
+
+
+
+# the functions that follow are for additional support if needed
+
+def get_cases_country(path: str) -> List[int]:
+	"""
+	Counts the number of cases based on the COUNTRIES for the parameter of interest.
+	
+	Arguments:
+		path {str} -- path to the dataset csv file for the parameter of interest
+	
+	Returns:
+		List[int] -- an ordered list of the number of cases for each country
+	"""
+	# load the dataset
+	df = pd.read_csv(path)
+	df = df.set_index('Country/Region')
+	df = df.iloc[:, -1]
+	
+	# count number of cases for each country into a dictionary
+	freq = defaultdict(int)
+	for country, cases in df.iteritems():
+		freq[country] += cases
+	
+	# make the ys in order of xs
+	ys = [0] * len(COUNTRIES)
+	for i in range(len(COUNTRIES)):
+		ys[i] = freq[COUNTRIES[i]]
+	
+	return ys
+
+
+
+def load_dataframe_country() -> pd.DataFrame:
+	"""
+	Creates a DataFrame based on the COUNTRIES with columns for each parameter of interest.
+	
+	Returns:
+		pd.DataFrame -- DataFrame in narrow format with each column denoting a parameter of interest
+	"""
+	# PATHS is an alphabetically sorted list
+	confirmed, deaths, recovered = PATHS
+
+	# load dataset for each parameter of interest
+	confirmed = get_cases_country(confirmed)
+	deaths = get_cases_country(deaths)
+	recovered = get_cases_country(recovered)
+	active = [confirmed[i] - deaths[i] - recovered[i] for i in range(len(COUNTRIES))]
+
+	# create pandas DataFrame
+	data = {'country': COUNTRIES, 'confirmed': confirmed, 'recovered': recovered, 'deaths': deaths, 'active': active}
+	df = pd.DataFrame(data)
+
+	return df
 
 
 
