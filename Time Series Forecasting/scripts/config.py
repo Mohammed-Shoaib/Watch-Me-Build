@@ -1,9 +1,9 @@
 # Global configuration
 access_token = 'YOUR GITHUB ACCESS TOKEN'
-FUTURE = 0				# number of future days to forecast
-PAST   = 0				# forecast from (today - past)th day
-DATA = '../data'		# path to output dataset
-FIGURES = '../figures'	# path to output figures
+FUTURE = 30				# number of future days from today to forecast > 0
+PAST   = 15				# number of past days from today to forecast
+DATA = '../data'		# path to directory to output dataset
+FIGURES = '../figures'	# path to directory to output figures
 XDATE = 'Date (2020)'	# label for x-axis
 WINDOW = 7				# window size to calculate rolling mean and standard deviation
 COLS = ['confirmed', 'deaths', 'recovered', 'active']	# the parameters of interest

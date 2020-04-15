@@ -1,6 +1,8 @@
 import os
+import numpy as np
 import pandas as pd
 
+from utils import *
 from config import *
 import matplotlib.pylab as plt
 from matplotlib.dates import DateFormatter
@@ -192,6 +194,90 @@ def plot_autocorrelation(df: pd.DataFrame, col: str) -> None:
 
 
 
+def dickey_fuller(df: pd.DataFrame) -> None:
+	"""
+	Prints results of the dickey-fuller test on the parameter of interest.
+	
+	Arguments:
+		df {pd.DataFrame} -- DataFrame of values for the parameter of interest
+	"""
+	df_test = adfuller(df, autolag='AIC')
+	
+	df_out = pd.Series(df_test[0:4], index=['Test Statistic', 'p-value', 'Number of lags used', 'Number of observations used'])
+	for k, v in df_test[4].items():
+		df_out[f'Critical Value ({k})'] = v
+	
+	print('Results of Dickey-Fuller Test:')
+	print(df_out)
+	print()
+
+
+
+def get_stationary(df: pd.DataFrame, col: str) -> pd.DataFrame:
+	"""
+	Creates a stationary DataFrame from the original by using second-order differencing.
+	Also, prints the results using each method for converting the dataset to stationary.
+	
+	Arguments:
+		df {pd.DataFrame} -- original DataFrame with rows as dates and columns as each parameter of interest
+		col {str} -- parameter of interest
+	
+	Returns:
+		pd.DataFrame -- stationary DataFrame obtained using second-order differencing
+	"""
+	df_log = np.log(df)		# natural logarithm of exponential curve gives a straight line
+
+	mean = df_log.rolling(window=WINDOW).mean()
+	std = df_log.rolling(window=WINDOW).std()
+
+	# moving average
+	df_ma = df_log - mean
+	df_ma.dropna(inplace=True)
+
+	# exponential decay weight average
+	df_ed = df_log - df_log.ewm(halflife=12, min_periods=0, adjust=True).mean()
+	df_ed.dropna(inplace=True)
+
+	# seasonal decomposition
+	df_dec = plot_seasonal(df_log, col)
+
+	# log shift
+	df_diff_1 = df_log.diff().dropna(axis=0)
+	df_diff_2 = df_diff_1.diff().dropna(axis=0)
+
+	# print results using each method
+	print('Test results on original dataset:')
+	plot_rolling(df, col, 'original', 'Original Dataset')
+	dickey_fuller(df[col])
+
+	print('Test results on natural logarithm:')
+	plot_rolling(df_log, col, 'logarithm', 'Natural Logarithm')
+	dickey_fuller(df_log[col])
+
+	print('Test results on simple moving average:')
+	plot_rolling(df_ma, col, 'simple-average', 'Simple Moving Average')
+	dickey_fuller(df_ma[col])
+
+	print('Test results on exponential decay:')
+	plot_rolling(df_ed, col, 'exponential-decay', 'Exponential Decay')
+	dickey_fuller(df_ed[col])
+
+	print('Test results on seasonal decomposition:')
+	plot_rolling(df_dec, col, 'seasonal-decomposition', 'Seasonal Decomposition')
+	dickey_fuller(df_dec[col])
+	
+	print('Test results on first-order differencing:')
+	plot_rolling(df_diff_1, col, 'first-order-differencing', 'First-Order Differencing')
+	dickey_fuller(df_diff_1[col])
+
+	print('Test results on second-order differencing:')		# works best!
+	plot_rolling(df_diff_2, col, 'second-order-differencing', 'Second-Order Differencing')
+	dickey_fuller(df_diff_2[col])
+
+	return df_diff_2
+
+
+
 def plot_daily_change(df: pd.DataFrame, col:str) -> None:
 	"""
 	Plots the daily change given by ΔD = D(i) - D(i - 1) i.e., the change from the previous day.
@@ -231,7 +317,7 @@ def plot_daily_cases(df: pd.DataFrame, col: str="") -> None:
 		col {str} -- the parameter of interest (default: {""})
 	"""
 	title = 'Daily Cases of COVID-19'
-	
+
 	# plot a parameter vs. all parameters
 	if col:
 		columns = [col]
@@ -246,10 +332,10 @@ def plot_daily_cases(df: pd.DataFrame, col: str="") -> None:
 
 	# plot daily cases
 	xs = df['date'].values
-	for col in columns:
-		ys = df[col].values
-		plt.plot(xs, ys, color=cm[col])
-		plt.scatter(xs, ys, color=cm[col])
+	for column in columns:
+		ys = df[column].values
+		plt.plot(xs, ys, color=cm[column])
+		plt.scatter(xs, ys, color=cm[column])
 	plt.legend(columns)
 
 	plot_param(file_name='daily-cases', col=col,
