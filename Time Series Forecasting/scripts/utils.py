@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 
 from config import *
-from visualize import *
 from typing import List
 from github import Github
 from collections import defaultdict
@@ -93,120 +92,6 @@ def get_cases(path: str, country: str) -> List[int]:
 
 
 
-def load_dataframe(country: str="") -> pd.DataFrame:
-	"""
-	Creates a DataFrame based on the DATES with columns for each parameter of interest.
-	
-	Keyword Arguments:
-		country {str} -- loads dataset only for given country if specified (default: {""})
-	
-	Returns:
-		pd.DataFrame -- DataFrame in narrow format with each column denoting a parameter of interest
-	"""
-	# PATHS is an alphabetically sorted list
-	confirmed, deaths, recovered = PATHS
-
-	# load dataset for each parameter of interest
-	confirmed = get_cases(confirmed, country)
-	deaths = get_cases(deaths, country)
-	recovered = get_cases(recovered, country)
-	active = [confirmed[i] - deaths[i] - recovered[i] for i in range(len(DATES))]
-
-	# create pandas DataFrame
-	data = {'date': DATES, 'confirmed': confirmed, 'recovered': recovered, 'deaths': deaths, 'active': active}
-	df = pd.DataFrame(data)
-	df['date'] = pd.to_datetime(df['date'])
-
-	return df
-
-
-
-def dickey_fuller(df: pd.DataFrame) -> None:
-	"""
-	Prints results of the dickey-fuller test on the parameter of interest.
-	
-	Arguments:
-		df {pd.DataFrame} -- DataFrame of values for the parameter of interest
-	"""
-	df_test = adfuller(df, autolag='AIC')
-	
-	df_out = pd.Series(df_test[0:4], index=['Test Statistic', 'p-value', 'Number of lags used', 'Number of observations used'])
-	for k, v in df_test[4].items():
-		df_out[f'Critical Value ({k})'] = v
-	
-	print('Results of Dickey-Fuller Test:')
-	print(df_out)
-	print()
-
-
-
-def get_stationary(df: pd.DataFrame, col: str) -> pd.DataFrame:
-	"""
-	Creates a stationary DataFrame from the original by using second-order differencing.
-	Also, prints the results using each method for converting the dataset to stationary.
-	
-	Arguments:
-		df {pd.DataFrame} -- original DataFrame with rows as dates and columns as each parameter of interest
-		col {str} -- parameter of interest
-	
-	Returns:
-		pd.DataFrame -- stationary DataFrame obtained using second-order differencing
-	"""
-	df_log = np.log(df)		# natural logarithm of exponential curve gives a straight line
-
-	mean = df_log.rolling(window=WINDOW).mean()
-	std = df_log.rolling(window=WINDOW).std()
-
-	# moving average
-	df_ma = df_log - mean
-	df_ma.dropna(inplace=True)
-
-	# exponential decay weight average
-	df_ed = df_log - df_log.ewm(halflife=12, min_periods=0, adjust=True).mean()
-	df_ed.dropna(inplace=True)
-
-	# seasonal decomposition
-	df_dec = plot_seasonal(df_log, col)
-
-	# log shift
-	df_diff_1 = df_log.diff().dropna(axis=0)
-	df_diff_2 = df_diff_1.diff().dropna(axis=0)
-
-	# print results using each method
-	print('Test results on original dataset:')
-	plot_rolling(df, col, 'original', 'Original Dataset')
-	dickey_fuller(df[col])
-
-	print('Test results on natural logarithm:')
-	plot_rolling(df_log, col, 'logarithm', 'Natural Logarithm')
-	dickey_fuller(df_log[col])
-
-	print('Test results on simple moving average:')
-	plot_rolling(df_ma, col, 'simple-average', 'Simple Moving Average')
-	dickey_fuller(df_ma[col])
-
-	print('Test results on exponential decay:')
-	plot_rolling(df_ed, col, 'exponential-decay', 'Exponential Decay')
-	dickey_fuller(df_ed[col])
-
-	print('Test results on seasonal decomposition:')
-	plot_rolling(df_dec, col, 'seasonal-decomposition', 'Seasonal Decomposition')
-	dickey_fuller(df_dec[col])
-	
-	print('Test results on first-order differencing:')
-	plot_rolling(df_diff_1, col, 'first-order-differencing', 'First-Order Differencing')
-	dickey_fuller(df_diff_1[col])
-
-	print('Test results on second-order differencing:')		# works best!
-	plot_rolling(df_diff_2, col, 'second-order-differencing', 'Second-Order Differencing')
-	dickey_fuller(df_diff_2[col])
-
-	return df_diff_2
-
-
-
-# the functions that follow are for additional support if needed
-
 def get_cases_country(path: str) -> List[int]:
 	"""
 	Counts the number of cases based on the COUNTRIES for the parameter of interest.
@@ -233,6 +118,34 @@ def get_cases_country(path: str) -> List[int]:
 		ys[i] = freq[COUNTRIES[i]]
 	
 	return ys
+
+
+
+def load_dataframe(country: str="") -> pd.DataFrame:
+	"""
+	Creates a DataFrame based on the DATES with columns for each parameter of interest.
+	
+	Keyword Arguments:
+		country {str} -- loads dataset only for given country if specified (default: {""})
+	
+	Returns:
+		pd.DataFrame -- DataFrame in narrow format with each column denoting a parameter of interest
+	"""
+	# PATHS is an alphabetically sorted list
+	confirmed, deaths, recovered = PATHS
+
+	# load dataset for each parameter of interest
+	confirmed = get_cases(confirmed, country)
+	deaths = get_cases(deaths, country)
+	recovered = get_cases(recovered, country)
+	active = [confirmed[i] - deaths[i] - recovered[i] for i in range(len(DATES))]
+
+	# create pandas DataFrame
+	data = {'date': DATES, 'confirmed': confirmed, 'recovered': recovered, 'deaths': deaths, 'active': active}
+	df = pd.DataFrame(data)
+	df['date'] = pd.to_datetime(df['date'])
+
+	return df
 
 
 
