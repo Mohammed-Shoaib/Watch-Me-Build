@@ -1,0 +1,99 @@
+Test results on original dataset:
+Results of Dickey-Fuller Test:
+Test Statistic                  0.230227
+p-value                         0.973907
+Number of lags used            11.000000
+Number of observations used    57.000000
+Critical Value (1%)            -3.550670
+Critical Value (5%)            -2.913766
+Critical Value (10%)           -2.594624
+dtype: float64
+
+Test results on natural logarithm:
+Results of Dickey-Fuller Test:
+Test Statistic                 -0.841458
+p-value                         0.806640
+Number of lags used             3.000000
+Number of observations used    65.000000
+Critical Value (1%)            -3.535217
+Critical Value (5%)            -2.907154
+Critical Value (10%)           -2.591103
+dtype: float64
+
+Test results on simple moving average:
+Results of Dickey-Fuller Test:
+Test Statistic                 -2.991071
+p-value                         0.035737
+Number of lags used             1.000000
+Number of observations used    61.000000
+Critical Value (1%)            -3.542413
+Critical Value (5%)            -2.910236
+Critical Value (10%)           -2.592745
+dtype: float64
+
+Test results on exponential decay:
+Results of Dickey-Fuller Test:
+Test Statistic                 -2.043865
+p-value                         0.267677
+Number of lags used             3.000000
+Number of observations used    65.000000
+Critical Value (1%)            -3.535217
+Critical Value (5%)            -2.907154
+Critical Value (10%)           -2.591103
+dtype: float64
+
+Test results on seasonal decomposition:
+Results of Dickey-Fuller Test:
+Test Statistic                -5.705632e+00
+p-value                        7.499887e-07
+Number of lags used            0.000000e+00
+Number of observations used    6.200000e+01
+Critical Value (1%)           -3.540523e+00
+Critical Value (5%)           -2.909427e+00
+Critical Value (10%)          -2.592314e+00
+dtype: float64
+
+Test results on first-order differencing:
+Results of Dickey-Fuller Test:
+Test Statistic                 -2.400500
+p-value                         0.141595
+Number of lags used             2.000000
+Number of observations used    65.000000
+Critical Value (1%)            -3.535217
+Critical Value (5%)            -2.907154
+Critical Value (10%)           -2.591103
+dtype: float64
+
+Test results on second-order differencing:
+Results of Dickey-Fuller Test:
+Test Statistic                -1.016938e+01
+p-value                        7.156354e-18
+Number of lags used            1.000000e+00
+Number of observations used    6.500000e+01
+Critical Value (1%)           -3.535217e+00
+Critical Value (5%)           -2.907154e+00
+Critical Value (10%)          -2.591103e+00
+dtype: float64
+
+                             ARIMA Model Results                              
+==============================================================================
+Dep. Variable:              D2.active   No. Observations:                   67
+Model:                 ARIMA(1, 2, 1)   Log Likelihood                  70.401
+Method:                       css-mle   S.D. of innovations              0.084
+Date:                Wed, 15 Apr 2020   AIC                           -132.803
+Time:                        19:43:24   BIC                           -123.984
+Sample:                    01-24-2020   HQIC                          -129.313
+                         - 03-30-2020                                         
+===================================================================================
+                      coef    std err          z      P>|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------
+const              -0.0032      0.004     -0.801      0.426      -0.011       0.005
+ar.L1.D2.active    -0.3136      0.168     -1.865      0.067      -0.643       0.016
+ma.L1.D2.active    -0.4925      0.153     -3.226      0.002      -0.792      -0.193
+                                    Roots                                    
+=============================================================================
+                  Real          Imaginary           Modulus         Frequency
+-----------------------------------------------------------------------------
+AR.1           -3.1887           +0.0000j            3.1887            0.5000
+MA.1            2.0306           +0.0000j            2.0306            0.0000
+-----------------------------------------------------------------------------
