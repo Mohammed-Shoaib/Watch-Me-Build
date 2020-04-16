@@ -7,19 +7,15 @@ A second model was built which takes in as input the output of an internal activ
 As of now, the model only recognizes 5 signs, 2 letters namely `A` and `Y` and 3 words namely `PEACE`, `OKAY` and `THUMBS UP`.
 
 ### Letters
-![A](https://s22.postimg.cc/jkeebgr5t/image.png)
-![Y](https://s22.postimg.cc/sff8m0atd/image.png)
+
+![A](assets/a.png)
+![Y](assets/y.png)
 
 ### Words
-![PEACE](https://s22.postimg.cc/r0dnxa20h/PEACE.png)
-![OKAY](https://s22.postimg.cc/hslfgkn8h/OKAY.png)
-![THUMBS UP](https://s22.postimg.cc/apdk0z4y9/THUMBS_UP.png)
 
-# Demo
-
-![Demo](https://media.giphy.com/media/4Z5mNlSFzBnX0qQonp/giphy.gif)
-
-Click [here](https://mohammed-shoaib.github.io/Hand-Gesture-Estimation/) to check out the live version.
+![PEACE](assets/peace.png)
+![OKAY](assets/okay.png)
+![THUMBS UP](assets/thumbs-up.png)
 
 # Run The Code
 

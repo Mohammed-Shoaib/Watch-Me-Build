@@ -85,11 +85,14 @@ async function setup(){
 
 async function draw(){
 	background(0);
+	// flip image capture
+	translate(capture.width, 0);
+	scale(-1, 1);
 	image(capture,0,0);
 	filter(THRESHOLD,thresholdVal);
 	filter(INVERT);
 	if(predictFrame){
-		if(count%60 == 0){
+		if(count % 60 == 0){
 			await predict();
 			count = 0;
 		}
