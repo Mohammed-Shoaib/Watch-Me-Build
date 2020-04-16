@@ -1,0 +1,29 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css?family=Dosis');
+/* font-family: 'Dosis', sans-serif; */
+@import url('https://fonts.googleapis.com/css?family=Poiret+One');
+/* font-family: 'Poiret One', cursive; */
+
+/* Centering all the elements */
+*{
+	margin: 0 auto;
+	font-size: 20px;
+}
+
+html,body{
+	text-align: center;
+}
+
+.btn-primary{
+	border-radius: 2.5px;
+	font-family: 'Poiret One', cursive;
+}
+
+.btn-success{
+	border-radius: 2.5px;
+	font-family: 'Dosis', sans-serif;
+}
+
+br{
+	line-height: 225%;
+}
