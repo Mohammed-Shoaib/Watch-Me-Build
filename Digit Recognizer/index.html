@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>Digit Recognizer</title>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"></script>
+		<!-- CSS Styling -->
+		<link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="styles/myStyles.css">
+		<!-- Scripts -->
+		<script type="text/javascript" src="libraries/p5.js"></script>
+		<script type="text/javascript" src="libraries/p5.dom.js"></script>
+		<script type="text/javascript" src="libraries/p5.sound.js"></script>
+		<script type="text/javascript" src="libraries/plotly.min.js"></script>
+		<script type="text/javascript" src="libraries/jquery.min.js"></script>
+		<script type="text/javascript" src="data.js"></script>
+		<script type="text/javascript" src="sketch.js"></script>
+	</head>
+
+	<body>
+		<div class='container-fluid'>
+			<div class='row'>
+				<div class='col-xs-12 col-md-8 col-lg-4' id='lossChart'></div>
+				<div class='col-xs-12 col-md-8 col-lg-4' id='content'>
+					<p id='message'></p></br>
+					<p>Train Iterations: </p>
+					<input type='number' class='form-control' id='trainIterations' value=100></br>
+					<button type='button' class='btn btn-success' id='loadB'>Load Model</button>
+					<p>or</p>
+					<button type='button' class='btn btn-success' id='trainB'>Train Model</button></br>
+					<button type='button' class='btn btn-success' id='testB'>Test Model</button></br>
+					<div id='results'>
+						<div id='train'></div>
+						<div id='test'></div>
+					</div>
+					<div id='canvas'></div>
+					<div id='predict'>
+						<button type='button' class='btn btn-primary' id='predictB'>Predict</button>
+						<button type='button' class='btn btn-primary' id='clearB'>Clear</button></br>
+					</div>
+				</div>
+				<div class='col-xs-12 col-md-8 col-lg-4' id='accuracyChart'></div>
+			</div>
+			<div class='row'>
+				<div class='col-xs-12 col-md-8' id='predictChart'></div>
+			</div></br>
+		</div>
+	</body>
+</html>
