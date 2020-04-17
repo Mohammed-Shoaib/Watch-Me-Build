@@ -11,4 +11,5 @@ Want to build flappy bird? Train an AI model to recognize hand gestures? Or perh
 *	[Digit Recognizer](Digit%20Recognizer/)
 *	[L-Systems](L-Systems/)
 *	[Flappy Bird](Flappy%20Bird/)
+*	[Snake](Snake/)
 *	[E-Commerce Website](E-Commerce%20Website/)
