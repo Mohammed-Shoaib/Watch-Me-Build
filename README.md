@@ -13,4 +13,5 @@ Want to build flappy bird? Train an AI model to recognize hand gestures? Or perh
 *	[L-Systems](L-Systems/)
 *	[Flappy Bird](Flappy%20Bird/)
 *	[Snake](Snake/)
+*	[Space Invaders](Space%20Invaders/)
 *	[Pop Balls](Pop%20Balls/)
