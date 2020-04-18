@@ -16,3 +16,4 @@ Want to build flappy bird? Train an AI model to recognize hand gestures? Or perh
 *	[Space Invaders](Space%20Invaders/)
 *	[Pop Balls](Pop%20Balls/)
 *	[2048](2048/)
+*	[Four Colors](Four%20Colors/)
