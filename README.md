@@ -22,3 +22,4 @@ Want to build flappy bird? Train an AI model to recognize hand gestures? Or perh
 *	[Tic-Tac-Toe](Tic-Tac-Toe/)
 *	[Mandelbrot & Julia Set](Mandelbrot%20&%20Julia%20Set/)
 *	[Sierpinski Triangle](Sierpinski%20Triangle/)
+*	[XOR Problem](XOR%20Problem/)
