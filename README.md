@@ -24,3 +24,4 @@ Want to build flappy bird? Train an AI model to recognize hand gestures? Or perh
 *	[Sierpinski Triangle](Sierpinski%20Triangle/)
 *	[XOR Problem](XOR%20Problem/)
 *	[Color Classifier](Color%20Classifier/)
+*	[Polynomial Regression](Polynomial%20Regression/)

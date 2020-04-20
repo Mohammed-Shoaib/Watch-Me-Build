@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+
+		<title>Polynomial Regression</title>
+
+		<!-- CSS Styling -->
+		<link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="styles/myStyles.css">
+
+		<!-- Script Tags -->
+	    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"> </script>
+	    <script type="text/javascript" src="libraries/p5.js"></script>
+	    <script type="text/javascript" src="libraries/p5.dom.js"></script>
+	    <script type="text/javascript" src="libraries/p5.sound.js"></script>
+		<script type="text/javascript" src="libraries/jquery.min.js"></script>
+	    <script type="text/javascript" src="sketch.js"></script>
+
+	</head>
+
+	<body>
+		<div id='contents'>
+				<p>Degree: </p>
+				<input type='number' class='form-control' id='degree' value=1>
+				<button type='button' class='btn btn-primary' id='submit'>Submit</button><br/>
+				<p id='loss'>Loss: No Points</p><br/>
+				<p id='function'>Function: No Points</p><br/>
+		</div>
+	</body>
+
+</html>
