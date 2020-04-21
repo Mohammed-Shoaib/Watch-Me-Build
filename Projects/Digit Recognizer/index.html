@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>Digit Recognizer</title>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"></script>
+		<!-- CSS -->
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+					rel="stylesheet" 
+					integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+					crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="css/myStyles.css">
+		<!-- JavaScript -->
+		<script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.min.js"></script>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  					integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+  					crossorigin="anonymous"></script>
+		<script type="text/javascript" src="js/data.js"></script>
+		<script type="text/javascript" src="js/sketch.js"></script>
+	</head>
+	<body>
+		<div class='container-fluid'>
+			<div class='row'>
+				<div class='col-xs-12 col-md-8 col-lg-4' id='lossChart'></div>
+				<div class='col-xs-12 col-md-8 col-lg-4' id='content'>
+					<p id='message'></p></br>
+					<p>Train Iterations: </p>
+					<input type='number' class='form-control' id='trainIterations' value=100></br>
+					<button type='button' class='btn btn-success' id='loadB'>Load Model</button>
+					<p>or</p>
+					<button type='button' class='btn btn-success' id='trainB'>Train Model</button></br>
+					<button type='button' class='btn btn-success' id='testB'>Test Model</button></br>
+					<div id='results'>
+						<div id='train'></div>
+						<div id='test'></div>
+					</div>
+					<div id='canvas'></div>
+					<div id='predict'>
+						<button type='button' class='btn btn-primary' id='predictB'>Predict</button>
+						<button type='button' class='btn btn-primary' id='clearB'>Clear</button></br>
+					</div>
+				</div>
+				<div class='col-xs-12 col-md-8 col-lg-4' id='accuracyChart'></div>
+			</div>
+			<div class='row'>
+				<div class='col-xs-12 col-md-8' id='predictChart'></div>
+			</div></br>
+		</div>
+	</body>
+</html>

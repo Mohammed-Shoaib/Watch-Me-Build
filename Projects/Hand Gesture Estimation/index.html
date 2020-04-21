@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Hand Gesture Estimation</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<!-- CSS -->
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+					rel="stylesheet" 
+					integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+					crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="css/myStyles.css">
+		<!-- JavaScript -->
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.5"></script>
+		<script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  					integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+  					crossorigin="anonymous"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+	</head>
+	<body>
+		<div class='container-fluid'>
+			<div class='row'>
+				<div class='col-xs-12 col-md-4' id='canvas-container'></div>
+				<div class='col-xs-12 col-md-4' id='content'>
+					<p id='messageP'></p><br/>
+					<p>Adjust Lighting: </p>
+					<input type='range' id='threshold' value=0.7 min=0 max=1 step=0.01><br/>
+					<div id='predictFrame'>
+						<!-- <p>Pose: </p>
+						<input type='text' class='form-control' id='pose' value='A' style="text-transform:uppercase" pattern='[A-Z]'>
+						<p>Number of Examples: </p>
+						<input type='number' class='form-control' id='numOfExamples' value=100 min=1 oninput="validity.valid||(value='');"><br/>
+						<button type='button' class='btn btn-primary' id='saveExamplesB'>Save Examples</button><br/> -->
+						<button type='button' class='btn btn-primary' id='predictB'>Predict</button><br/>
+					</div>
+					<p id='predictP'>Prediction: No Prediction</p><br/>
+					<label><input class='checkbox' type='checkbox' id='predictC'>Predict every frame</label>
+				</div>
+				<div class='col-xs-12 col-md-4' id='webcam-container'></div>
+			</div>
+		</div>
+	</body>
+</html>
