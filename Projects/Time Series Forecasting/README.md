@@ -4,7 +4,7 @@
 
 Coronavirus (COVID-19) is an infectious disease causing a pandemic around the world. A pandemic disease spreads very quickly i.e., at an exponential rate. Most people affected experience respiratory illness and recover without special treatment. However, for older people it is a different story. People over the age of 65 experience underlying medical problems like diabetes, chronic respiratory pain, cardiovascular disease, and even cancer in certain cases. Hence, it is very important we keep ourselves aware and take precautionary measures.
 
-<p align="center"><img src="assets/protect-yourself.png" height=300px></p>
+<p align="center"><img src="assets/protect-yourself.png" height="300"></p>
 
 The goal of this project is to forecast the spread of COVID-19 and its future consequences using the statistical model ARIMA.
 
