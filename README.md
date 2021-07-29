@@ -19,7 +19,7 @@ Want to build flappy bird? Train an AI model to recognize hand gestures? Or perh
 *	[Color Classifier](Projects/Color%20Classifier/)
 *	[Space Invaders](Projects/Space%20Invaders/)
 *	[Mandelbrot & Julia Set](Projects/Mandelbrot%20&%20Julia%20Set/)
-*	[Sierpinski Triangle](Projects/Sierpinski%20Triangle/)
+*	[Sierpiński Triangle](Projects/Sierpiński%20Triangle/)
 *	[2048](Projects/2048/)
 *	[Fractal Ferns](Projects/Fractal%20Ferns/)
 *	[Fractal Tree](Projects/Fractal%20Tree/)
